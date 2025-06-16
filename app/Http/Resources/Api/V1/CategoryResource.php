@@ -12,7 +12,9 @@ class CategoryResource extends JsonResource
             'id'             => $this->id,
             'name'           => $this->name,
             'thumbnail'      => $this->thumbnail,
+            'thumbnail_url'  => $this->thumbnail_url,
             'detail_photo'   => $this->detail_photo,
+            'detail_photo_url'   => $this->detail_photo_url,
             'pricing'        => Json_decode($this->pricing),
             'configuration'  => Json_decode($this->configuration),
             'adders'         => $this->adders->map(fn($adder) => [

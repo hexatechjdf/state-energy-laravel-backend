@@ -13,7 +13,10 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::with(['adders'])->get();
-        return response()->json(CategoryResource::collection($categories));
+        return successResponse([
+            'categories'  => CategoryResource::collection($categories),
+        ]);
+        
     }
 
     public function store(CategoryRequest $request): JsonResponse
@@ -25,14 +28,17 @@ class CategoryController extends Controller
         if (!empty($data['adders'])) {
             $category->adders()->sync($data['adders']);
         }
-
-        return response()->json(new CategoryResource($category), 201);
+        return successResponse([
+            'categories'  => new CategoryResource($category),
+        ]);
     }
 
     public function show(Category $category)
     {
         $category->load(['adders']);
-        return response()->json(new CategoryResource($category));
+        return successResponse([
+            'categories'  => new CategoryResource($category),
+        ]);
     }
 
     public function update(CategoryRequest $request, Category $category): JsonResponse
@@ -44,13 +50,16 @@ class CategoryController extends Controller
         if (array_key_exists('adders', $data)) {
             $category->adders()->sync($data['adders']);
         }
-
-        return response()->json(new CategoryResource($category));
+        return successResponse([
+            'categories'  => new CategoryResource($category),
+        ]);
     }
 
     public function destroy(Category $category): JsonResponse
     {
         $category->delete();
-        return response()->json(null, 204);
+        return successResponse([
+            'result'  => null,
+        ]);
     }
 }

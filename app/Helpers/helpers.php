@@ -1,6 +1,14 @@
 <?php
 
+use App\Models\Setting;
 use Symfony\Component\HttpFoundation\Response;
+
+function getSettingValue($user_id, $key, $def = '')
+{
+    return Setting::where('user_id', $user_id)
+                  ->where('key', $key)
+                  ->value('value') ?? $def;
+}
 
 if (!function_exists('successResponse')) {
     function successResponse($data, $status = Response::HTTP_OK)
@@ -20,4 +28,8 @@ if (!function_exists('errorResponse')) {
             'message' => $message
         ], $status);
     }
+}
+function loginUser()
+{
+    return auth()->user();
 }

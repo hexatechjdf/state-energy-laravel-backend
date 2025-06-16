@@ -12,9 +12,14 @@ class CategorySeeder extends Seeder
         // Roof Category
         Category::create([
             'name'           => 'Roof',
-            'thumbnail'      => 'roof-thumb.jpg',
-            'detail_photo'   => 'roof-detail.jpg',
-            'pricing'        => json_encode(['price_per_sqft' => 50]),
+            'thumbnail'      => 'category/roof-thumb.png',
+            'detail_photo'   => 'category/roof-detail.png',
+            'pricing' => json_encode([
+                'Shingle' => ['price_per_sqft' => 1375],
+                'Flat'    => ['price_per_sqft' => 1500],
+                'Metal'   => ['price_per_sqft' => 2625],
+                'Tile'    => ['price_per_sqft' => 2750],
+            ]),
             'configuration'  => json_encode([
                 'fields' => [
                     [
@@ -42,9 +47,11 @@ class CategorySeeder extends Seeder
         // Solar Category
         Category::create([
             'name'           => 'Solar',
-            'thumbnail'      => 'solar-thumb.jpg',
-            'detail_photo'   => 'solar-detail.jpg',
-            'pricing'        => json_encode(['price_per_panel' => 300]),
+            'thumbnail'      => 'category/solar-thumb.png',
+            'detail_photo'   => 'category/solar-detail.png',
+            'pricing' => json_encode([
+                'price_per_watt' => 0.80,
+            ]),
             'configuration'  => json_encode([
                 'fields' => [
                     [
@@ -76,24 +83,48 @@ class CategorySeeder extends Seeder
 
         // HVAC Category
         Category::create([
-            'name'           => 'HVAC',
-            'thumbnail'      => 'hvac-thumb.jpg',
-            'detail_photo'   => 'hvac-detail.jpg',
-            'pricing'        => json_encode(['price_per_capacity' => 300, 'base_price' => 100]),
-            'configuration'  => json_encode([
+            'name'         => 'HVAC',
+            'thumbnail'    => 'category/hvac-thumb.png',
+            'detail_photo' => 'category/hvac-detail.png',
+
+            // Pricing specific to each sub-category and capacity
+            'pricing' => json_encode([
+                'Central' => [
+                    'capacities' => [
+                        ['label' => '1 TON', 'price' => 7750],
+                        ['label' => '2 TON', 'price' => 8500],
+                        ['label' => '2.5 TON', 'price' => 9000],
+                        ['label' => '3 TON', 'price' => 10000],
+                        ['label' => '3.5 TON', 'price' => 10500],
+                        ['label' => '4 TON', 'price' => 11250],
+                        ['label' => '5 TON', 'price' => 12000],
+                    ]
+                ],
+                'Mini Split' => [
+                    'capacities' => [
+                        ['label' => '1 TON', 'price' => 4500],
+                        ['label' => '1.5 TON', 'price' => 4750],
+                        ['label' => '2 TON', 'price' => 5750],
+                        ['label' => '2 TON', 'price' => 6250],
+                    ]
+                ]
+            ]),
+
+            // Dynamic field config based on sub-category
+            'configuration' => json_encode([
                 'fields' => [
                     [
-                        'label' => 'Choose Category',
-                        'type'  => 'select',
-                        'options' => ['Central', 'Mini Split'],
-                        'name'  => 'sub_category'
+                        'label'   => 'Choose System Type',
+                        'type'    => 'select',
+                        'name'    => 'sub_category',
+                        'options' => ['Central', 'Mini Split']
                     ],
                     [
-                        'label' => 'Capacity',
-                        'type'  => 'number',
-                        'unit'  => 'TON',
-                        'name'  => 'capacity'
-                    ],
+                        'label'   => 'Capacity',
+                        'type'    => 'dynamic_select',
+                        'name'    => 'capacity',
+                        'options_source' => 'pricing',
+                    ]
                 ]
             ])
         ]);
@@ -101,9 +132,13 @@ class CategorySeeder extends Seeder
         // Windows Category
         Category::create([
             'name'           => 'Windows',
-            'thumbnail'      => 'windows-thumb.jpg',
-            'detail_photo'   => 'windows-detail.jpg',
-            'pricing'        => json_encode(['price_per_sqft' => 300, 'base_price' => 100]),
+            'thumbnail'      => 'category/windows-thumb.png',
+            'detail_photo'   => 'category/windows-detail.png',
+            'pricing' => json_encode([
+                'unit' => 'sqft',
+                'formula' => '(height * width) / 144',
+                'price_per_sqft' => 150.00,
+            ]),
             'configuration'  => json_encode([
                 'fields' => [
                     [
@@ -147,9 +182,29 @@ class CategorySeeder extends Seeder
         // Doors Category
         Category::create([
             'name'           => 'Doors',
-            'thumbnail'      => 'doors-thumb.jpg',
-            'detail_photo'   => 'doors-detail.jpg',
-            'pricing'        => json_encode(['price_per_sqft' => 300, 'base_price' => 100]),
+            'thumbnail'      => 'category/doors-thumb.png',
+            'detail_photo'   => 'category/doors-detail.png',
+            'pricing' => json_encode([
+                'Single Front Door' => [
+                    'cost'       => 1750.00,
+                    'msrp'       => 3150.00,
+                    'min_price'  => 2625.00,
+                    'max_price'  => 4375.00
+                ],
+                'Double Front Door' => [
+                    'cost'       => 3050.00,
+                    'msrp'       => 5490.00,
+                    'min_price'  => 4575.00,
+                    'max_price'  => 7625.00
+                ],
+                'Sliding Door' => [
+                    'cost'       => 2850.00,
+                    'msrp'       => 5130.00,
+                    'min_price'  => 4275.00,
+                    'max_price'  => 7125.00
+                ]
+
+            ]),
             'configuration'  => json_encode([
                 'fields' => [
                     [
@@ -167,7 +222,7 @@ class CategorySeeder extends Seeder
                     [
                         'label' => 'Type',
                         'type'  => 'select',
-                        'options' => ['Single Hung', 'French'],
+                        'options' => ['Single Front Door', 'Double Front Door', 'Sliding Door'],
                         'name'  => 'type'
                     ],
                     [
@@ -193,8 +248,8 @@ class CategorySeeder extends Seeder
         // Water Heater Category
         Category::create([
             'name'           => 'Water Heater',
-            'thumbnail'      => 'water-heater-thumb.jpg',
-            'detail_photo'   => 'water-heater-detail.jpg',
+            'thumbnail'      => 'category/water-heater-thumb.png',
+            'detail_photo'   => 'category/water-heater-detail.png',
             'pricing'        => json_encode([
                 'price_per_gallon'  => 12,    // hypothetical per gallon rate
                 'installation_fee'  => 200,
@@ -232,9 +287,22 @@ class CategorySeeder extends Seeder
         // Insulation Category
         Category::create([
             'name'           => 'Insulation',
-            'thumbnail'      => 'insulation-thumb.jpg',
-            'detail_photo'   => 'insulation-detail.jpg',
-            'pricing'        => json_encode(['price_per_sqft' => 300, 'base_price' => 100]),
+            'thumbnail'      => 'category/insulation-thumb.png',
+            'detail_photo'   => 'category/insulation-detail.png',
+            'pricing' => json_encode([
+                'Blown-in Insulation' => [
+                    'R-Value' => [
+                        ['label' => 'R-30', 'price' => 7750],
+                        ['label' => 'R-38', 'price' => 8500],
+                    ]
+                ],
+                'Batt Insulation' => [
+                    'R-Value' => [
+                        ['label' => 'R-30', 'price' => 750],
+                        ['label' => 'R-35', 'price' => 800],
+                    ]
+                ]
+            ]),
             'configuration'  => json_encode([
                 'fields' => [
                     [
@@ -245,9 +313,9 @@ class CategorySeeder extends Seeder
                     ],
                     [
                         'label' => 'R-Value',
-                        'type'  => 'select',
-                        'options' => ['R-38', 'R-39'],
-                        'name'  => 'r_value'
+                        'type'  => 'dynamic_select',
+                        'name'  => 'r_value',
+                        'options_source' => 'pricing',
                     ],
                     [
                         'label' => 'Square Footage',
@@ -267,9 +335,9 @@ class CategorySeeder extends Seeder
         // Other Category
         Category::create([
             'name'           => 'Other',
-            'thumbnail'      => 'other-thumb.jpg',
-            'detail_photo'   => 'other-detail.jpg',
-            'pricing'        => json_encode(['price_per_sqft' => 300, 'base_price' => 100]),
+            'thumbnail'      => 'category/other-thumb.png',
+            'detail_photo'   => 'category/other-detail.png',
+            'pricing'        => json_encode(['unit_price' => 100]),
             'configuration'  => json_encode([
                 'fields' => [
                     [

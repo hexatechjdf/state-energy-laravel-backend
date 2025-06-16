@@ -19,8 +19,15 @@ class AdderSeeder extends Seeder
             return;
         }
         $hvacAdders = [
-            ['name' => 'New Slub', 'price' => 200.00],
-            ['name' => 'New Duct', 'price' => 500.00],
+            ['name' => 'New Slub', 'price' => 500.00],
+            ['name' => 'New Ducts', 'price' => 1250.00],
+            ['name' => 'New Breaker', 'price' => 3125.00],
+            ['name' => 'New Air Handler stand', 'price' => 325.00],
+            ['name' => 'New Disconnect', 'price' => 450.00],
+            ['name' => 'New Planum', 'price' => 625.00],
+            ['name' => 'Smart Thermostat', 'price' => 375.00],
+            ['name' => 'New Drain Line', 'price' => 1250.00],
+            ['name' => 'New Copper Line', 'price' => 2500.00],
         ];
         $solarAdders = [
             ['name' => 'MPU', 'price' => 350.00],

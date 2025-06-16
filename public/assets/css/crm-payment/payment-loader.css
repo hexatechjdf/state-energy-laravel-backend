@@ -1,0 +1,48 @@
+.laravel-loader {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+.laravel-loader__img {
+    width: 64px;
+    /* Base size for the logo */
+    height: auto;
+    transform-origin: center center;
+    animation: laravel-breathe 2s ease-in-out infinite;
+}
+
+/* Size variations */
+.laravel-loader--small .laravel-loader__img {
+    width: 32px;
+}
+
+.laravel-loader--medium .laravel-loader__img {
+    width: 64px;
+}
+
+.laravel-loader--large .laravel-loader__img {
+    width: 96px;
+}
+
+.laravel-loader--xlarge .laravel-loader__img {
+    width: 128px;
+}
+
+@keyframes laravel-breathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+}

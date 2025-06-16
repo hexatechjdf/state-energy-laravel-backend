@@ -16,9 +16,18 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'phone' => $this->phone,
+            'dial_code' => $this->dial_code,
+            'city' => $this->city,
+            'zip_code' => $this->zip_code,
+            'country' => $this->country,
             'email' => $this->email,
-            // add any other public fields here
+            'location_id' => $this->location_id,
+            'user_id' => $this->user_id,
+            'avatar' => $this->avatar,
+            'avatar_url' => $this->avatar_url,
         ];
     }
 }
