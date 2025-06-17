@@ -2,12 +2,6 @@ services:
   - type: web
     name: laravel-12-app
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      php artisan key:generate
-      php artisan migrate --force
-    startCommand: |
-      php -S 0.0.0.0:10000 -t public
     envVars:
       - key: APP_ENV
         value: production
