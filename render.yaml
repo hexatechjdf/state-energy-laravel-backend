@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: my-php-api
+    env: php
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+    startCommand: |
+      php -S 0.0.0.0:10000 -t public
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        value: base64:rFsIzbkU5k1mrgFQ4gBaCQGt4Ne7tPWai1DDfh92t0I=
+    plan: free
+    autoDeploy: true
