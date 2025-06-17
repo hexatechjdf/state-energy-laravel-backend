@@ -193,6 +193,6 @@ return [
   "no_matching_records_found" => "no matching records found",
   "first" => "first",
   "last" => "last",
-  "Merchants" => 'Merchants',
+  "Users" => 'Users',
 
 ];

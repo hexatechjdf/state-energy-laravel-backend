@@ -6,7 +6,23 @@ if($user)
     $color = $user->getSpecificSettings(['header_color']); 
 }
 ?>
-<header id="page-topbar" style="background-color: {{ $color['header_color'] ?? '#5773f0' }}">
+<div id="loader" style="
+    display:none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.8);
+    text-align: center;
+    padding-top: 20%;
+">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+<header id="page-topbar" style="padding: 0.5rem;background-color: {{ $color['header_color'] ?? '#5773f0' }}">
     <div class="navbar-header">
         <div class="d-flex">
             <!-- LOGO -->
@@ -31,41 +47,19 @@ if($user)
             </div>
         </div>
         <div class="d-flex">
-            <div class="dropdown d-inline-block d-lg-none ml-2">
-                <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-search-dropdown"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-magnify"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
-                    aria-labelledby="page-header-search-dropdown">
-
-                    <form class="p-3">
-                        <div class="form-group m-0">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="@lang('translation.Search')"
-                                    aria-label="Search input">
-
-                                <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>s
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
             @if (Auth::check())
             @if (Auth::user()->role_id == App\Models\User::ROLE_ADMIN)
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <!-- <img class="rounded-circle header-profile-user"
-                        src="{{ isset(Auth::user()->avatar) ? asset(Auth::user()->avatar) : asset('/assets/images/users/avatar-1.jpg') }}"
-                        alt="Header Avatar"> -->
+                    <img class="rounded-circle header-profile-user"
+                        src="{{ isset(Auth::user()->avatar) ? asset(Auth::user()->avatar_url) : asset('/assets/images/users/avatar-1.jpg') }}"
+                        alt="Header Avatar">
                     <span class="d-none d-xl-inline-block ms-1" key="t-henry">{{ucfirst(Auth::user()->name)}}</span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    {{-- <a class="dropdown-item" href="#"><i class="bx bx-lock-open font-size-16 align-middle me-1"></i>
-                        <span key="t-lock-screen">@lang('translation.Lock_screen')</span></a> --}}
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item text-danger" href="javascript:void();"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i
@@ -82,17 +76,15 @@ if($user)
     </div>
 </header>
 
-<div class="topnav">
+<div class="topnav" style="margin-top: 90px;">
     <div class="container-fluid">
         <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
 
             <div class="collapse navbar-collapse" id="topnav-menu-content">
                 <ul class="navbar-nav">
                     @if (Auth::check())
-                    @if (Auth::user()->role == App\Models\User::ROLE_ADMIN)
+                    @if (Auth::user()->role_id == App\Models\User::ROLE_ADMIN)
                     @include('layouts.sidebar_admin')
-                    @elseif (Auth::user()->role == App\Models\User::ROLE_LOCATION)
-                    @include('layouts.sidebar_location')
                     @endif
                     @endif
 

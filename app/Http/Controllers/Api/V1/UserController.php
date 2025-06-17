@@ -94,9 +94,12 @@ class UserController extends Controller
         }
         return errorResponse('Invalid JWT');
     }
-    public function getHLUsers()
+    public function getHLUsers(Request $request)
     {
-        $user = \Auth::user();
+        $user = \Auth::user() ?? User::where('location_id', $request->location_id)->first();
+        if (!$user) {
+            return errorResponse('Invalid User');
+        }
         $fetchHLUsers = CRM::crmV2($user->id, 'users?locationId=' . $user->location_id, 'get', '', [], true, $user->location_id);
         if (is_string($fetchHLUsers)) {
             $fetchHLUsers = json_decode($fetchHLUsers, true);

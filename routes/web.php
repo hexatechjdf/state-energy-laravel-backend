@@ -12,6 +12,7 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
     Route::post('/update-profile', [AdminController::class, 'update'])->name('update.profile');
     Route::get('setting', [SettingController::class, 'index'])->name('setting');
     Route::post('/setting/save', [SettingController::class, 'store'])->name('setting.save');
+    Route::get('index', [AdminController::class, 'index'])->name('user.index');
+    Route::post('/get-table-data', [AdminController::class, 'getTableData'])->name('user.table-data');
 
-   
 });

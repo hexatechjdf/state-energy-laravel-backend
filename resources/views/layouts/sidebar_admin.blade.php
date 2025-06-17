@@ -1,9 +1,9 @@
-{{-- <li  class="nav-item dropdown">
-    <a href="/" class="nav-link arrow-none">
-        <i class="bx bx-home-circle"></i>
-        <span key="t-starter-page">@lang('translation.Dashboard')</span>
+<li  class="nav-item dropdown">
+    <a href="{{ route('admin.user.index') }}" class="nav-link arrow-none">
+        <i class="bx bx-user"></i>
+        <span key="t-starter-page">@lang('translation.Users')</span>
     </a>
-</li> --}}
+</li>
 <li  class="nav-item dropdown">
     <a href="{{ route('admin.setting') }}" class="nav-link arrow-none">
         <i class="bx bx-wrench"></i>
