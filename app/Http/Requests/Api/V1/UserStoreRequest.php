@@ -22,9 +22,16 @@ class UserStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'first_name' => 'sometimes|required|string|max:255',
+            'last_name'  => 'sometimes|required|string|max:255',
+            'phone'      => 'sometimes|required|string|max:255',
+            'dial_code'  => 'sometimes|required|string|max:255',
+            'city'       => 'sometimes|required|string|max:255',
+            'country'    => 'sometimes|required|string|max:255',
+            'zip_code'   => 'sometimes|required|string|max:255',
+            'email'      => 'required|email|unique:users,email',
+            'password'   => 'required|string|min:8|confirmed',
+             'user_id'   => 'sometimes|required|string|max:255',
         ];
     }
 }

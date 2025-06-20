@@ -15,10 +15,10 @@ class CategorySeeder extends Seeder
             'thumbnail'      => 'category/roof-thumb.png',
             'detail_photo'   => 'category/roof-detail.png',
             'pricing' => json_encode([
-                'Shingle' => ['price_per_sqft' => 1375],
-                'Flat'    => ['price_per_sqft' => 1500],
-                'Metal'   => ['price_per_sqft' => 2625],
-                'Tile'    => ['price_per_sqft' => 2750],
+                'Shingle' => ['price_per_sqft' => '1375.00'],
+                'Flat'    => ['price_per_sqft' => '1500.00'],
+                'Metal'   => ['price_per_sqft' => '2625.00'],
+                'Tile'    => ['price_per_sqft' => '2750.00'],
             ]),
             'configuration'  => json_encode([
                 'fields' => [
@@ -26,6 +26,7 @@ class CategorySeeder extends Seeder
                         'label' => 'Choose Category',
                         'type'  => 'select',
                         'options' => ['Shingle', 'Flat', 'Metal', 'Tile'],
+                        'pricing' => 'true',
                         'name'  => 'category'
                     ],
                     [
@@ -38,7 +39,8 @@ class CategorySeeder extends Seeder
                         'label' => 'Color',
                         'type'  => 'select',
                         'options' => ['Red', 'Grey', 'Black'],
-                        'name'  => 'color'
+                        'name'  => 'color',
+                        'pricing' => 'false',
                     ],
                 ]
             ])
@@ -50,7 +52,11 @@ class CategorySeeder extends Seeder
             'thumbnail'      => 'category/solar-thumb.png',
             'detail_photo'   => 'category/solar-detail.png',
             'pricing' => json_encode([
-                'price_per_watt' => 0.80,
+                'price_per_watt' => '0.80',
+                'battery' => [
+                    '5.8 kilowatt' => '4500.00',
+                    '7.6 kilowatt' => '5500.00',
+                ]
             ]),
             'configuration'  => json_encode([
                 'fields' => [
@@ -64,7 +70,7 @@ class CategorySeeder extends Seeder
                         'label' => 'Size of Panel',
                         'type'  => 'number',
                         'unit'  => 'w',
-                        'name'  => 'panel_size'
+                        'name'  => 'panel_size',
                     ],
                     [
                         'label' => 'Include Battery',
@@ -72,10 +78,11 @@ class CategorySeeder extends Seeder
                         'name'  => 'battery_backup'
                     ],
                     [
-                        'label' => 'Select Battery',
-                        'type'  => 'select',
+                        'label'   => 'Select Battery',
+                        'type'    => 'select',
                         'options' => ['5.8 kilowatt', '7.6 kilowatt'],
-                        'name'  => 'battery'
+                        'name'    => 'battery',
+                        'pricing' => 'true', // enable pricing input for this select field
                     ],
                 ]
             ])
@@ -90,23 +97,19 @@ class CategorySeeder extends Seeder
             // Pricing specific to each sub-category and capacity
             'pricing' => json_encode([
                 'Central' => [
-                    'capacities' => [
-                        ['label' => '1 TON', 'price' => 7750],
-                        ['label' => '2 TON', 'price' => 8500],
-                        ['label' => '2.5 TON', 'price' => 9000],
-                        ['label' => '3 TON', 'price' => 10000],
-                        ['label' => '3.5 TON', 'price' => 10500],
-                        ['label' => '4 TON', 'price' => 11250],
-                        ['label' => '5 TON', 'price' => 12000],
-                    ]
+                    '1 TON'   => '7750.00',
+                    '2 TON'   => '8500.00',
+                    '2.5 TON' => '9000.00',
+                    '3 TON'   => '10000.00',
+                    '3.5 TON' => '10500.00',
+                    '4 TON'   => '11250.00',
+                    '5 TON'   => '12000.00',
                 ],
                 'Mini Split' => [
-                    'capacities' => [
-                        ['label' => '1 TON', 'price' => 4500],
-                        ['label' => '1.5 TON', 'price' => 4750],
-                        ['label' => '2 TON', 'price' => 5750],
-                        ['label' => '2 TON', 'price' => 6250],
-                    ]
+                    '1 TON'   => '4500.00',
+                    '1.5 TON' => '4750.00',
+                    '2 TON'   => '5750.00',
+                    '2.5 TON' => '6250.00'
                 ]
             ]),
 
@@ -120,10 +123,16 @@ class CategorySeeder extends Seeder
                         'options' => ['Central', 'Mini Split']
                     ],
                     [
-                        'label'   => 'Capacity',
-                        'type'    => 'dynamic_select',
-                        'name'    => 'capacity',
+                        'label'         => 'Capacity',
+                        'type'          => 'dynamic_select',
+                        'name'          => 'capacity',
                         'options_source' => 'pricing',
+                        'options'       => [
+                            'Central'    => ['1 TON', '2 TON', '2.5 TON', '3 TON', '3.5 TON', '4 TON', '5 TON'],
+                            'Mini Split' => ['1 TON', '1.5 TON', '2 TON', '2.5 TON']
+                        ],
+                        'pricing'       => 'true',
+                        "depends_on"=> "sub_category",
                     ]
                 ]
             ])
@@ -137,7 +146,7 @@ class CategorySeeder extends Seeder
             'pricing' => json_encode([
                 'unit' => 'sqft',
                 'formula' => '(height * width) / 144',
-                'price_per_sqft' => 150.00,
+                'price_per_sqft' => '150.00',
             ]),
             'configuration'  => json_encode([
                 'fields' => [
@@ -186,22 +195,22 @@ class CategorySeeder extends Seeder
             'detail_photo'   => 'category/doors-detail.png',
             'pricing' => json_encode([
                 'Single Front Door' => [
-                    'cost'       => 1750.00,
-                    'msrp'       => 3150.00,
-                    'min_price'  => 2625.00,
-                    'max_price'  => 4375.00
+                    'cost'       => '1750.00',
+                    'msrp'       => '3150.00',
+                    'min_price'  => '2625.00',
+                    'max_price'  => '4375.00'
                 ],
                 'Double Front Door' => [
-                    'cost'       => 3050.00,
-                    'msrp'       => 5490.00,
-                    'min_price'  => 4575.00,
-                    'max_price'  => 7625.00
+                    'cost'       => '3050.00',
+                    'msrp'       => '5490.00',
+                    'min_price'  => '4575.00',
+                    'max_price'  => '7625.00'
                 ],
                 'Sliding Door' => [
-                    'cost'       => 2850.00,
-                    'msrp'       => 5130.00,
-                    'min_price'  => 4275.00,
-                    'max_price'  => 7125.00
+                    'cost'       => '2850.00',
+                    'msrp'       => '5130.00',
+                    'min_price'  => '4275.00',
+                    'max_price'  => '7125.00'
                 ]
 
             ]),
@@ -251,9 +260,9 @@ class CategorySeeder extends Seeder
             'thumbnail'      => 'category/water-heater-thumb.png',
             'detail_photo'   => 'category/water-heater-detail.png',
             'pricing'        => json_encode([
-                'price_per_gallon'  => 12,    // hypothetical per gallon rate
-                'installation_fee'  => 200,
-                'tankless_addon'    => 500
+                'price_per_gallon'  => '12.00',    // hypothetical per gallon rate
+                'installation_fee'  => '200.00',
+                'tankless_addon'    => '500.00'
             ]),
             'configuration'  => json_encode([
                 'fields' => [
@@ -291,31 +300,33 @@ class CategorySeeder extends Seeder
             'detail_photo'   => 'category/insulation-detail.png',
             'pricing' => json_encode([
                 'Blown-in Insulation' => [
-                    'R-Value' => [
-                        ['label' => 'R-30', 'price' => 7750],
-                        ['label' => 'R-38', 'price' => 8500],
-                    ]
+                    'R-30' => '7750.00',
+                    'R-38' => '8500.00'
                 ],
                 'Batt Insulation' => [
-                    'R-Value' => [
-                        ['label' => 'R-30', 'price' => 750],
-                        ['label' => 'R-35', 'price' => 800],
-                    ]
+                    'R-30' => '750.00',
+                    'R-35' => '800.00'
                 ]
             ]),
             'configuration'  => json_encode([
                 'fields' => [
                     [
-                        'label' => 'Choose Category',
-                        'type'  => 'select',
-                        'options' => ['Blown-in Insulation', 'Batt Insulation'],
-                        'name'  => 'category'
+                        'label'   => 'Choose Insulation Type',
+                        'type'    => 'select',
+                        'name'    => 'sub_category',
+                        'options' => ['Blown-in Insulation', 'Batt Insulation']
                     ],
                     [
-                        'label' => 'R-Value',
-                        'type'  => 'dynamic_select',
-                        'name'  => 'r_value',
+                        'label'          => 'R-Value',
+                        'type'           => 'dynamic_select',
+                        'name'           => 'r_value',
                         'options_source' => 'pricing',
+                        'options'        => [
+                            'Blown-in Insulation' => ['R-30', 'R-38'],
+                            'Batt Insulation'     => ['R-30', 'R-35']
+                        ],
+                        "depends_on"=> "sub_category",
+                        'pricing'        => 'true'
                     ],
                     [
                         'label' => 'Square Footage',
@@ -337,7 +348,7 @@ class CategorySeeder extends Seeder
             'name'           => 'Other',
             'thumbnail'      => 'category/other-thumb.png',
             'detail_photo'   => 'category/other-detail.png',
-            'pricing'        => json_encode(['unit_price' => 100]),
+            'pricing'        => json_encode(['total_price' => '100.00']),
             'configuration'  => json_encode([
                 'fields' => [
                     [

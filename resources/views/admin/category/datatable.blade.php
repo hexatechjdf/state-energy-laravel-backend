@@ -1,19 +1,19 @@
 <script>
-    var user_table = null;
+    var category_table = null;
     var checkedStatuses = {};
     (function($) {
         "use strict";
 
         $(function() {
-            if ($.fn.DataTable.isDataTable('#user-table')) {
-                $('#user-table').DataTable().destroy();
+            if ($.fn.DataTable.isDataTable('#category-table')) {
+                $('#category-table').DataTable().destroy();
             }
 
-            user_table = $('#user-table').DataTable({
+            category_table = $('#category-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: ({
-                    url: "{{ route('admin.user.table-data')}}",
+                    url: "{{ route('admin.category.table-data')}}",
                     method: "POST",
                     data: function(d) {
                         d._token = '{{ csrf_token() }}'
@@ -28,30 +28,22 @@
                         name: "id"
                     },
                     {
-                        data: "first_name",
-                        name: "first_name"
+                        data: "name",
+                        name: "name"
                     },
                     {
-                        data: "email",
-                        name: "email"
+                        data: "thumbnail",
+                        name: "thumbnail",
                     },
                     {
-                        data: "phone",
-                        name: "phone"
+                        data: "detail_photo",
+                        name: "detail_photo"
                     },
-                     {
-                        data: "country",
-                        name: "country"
+                    {
+                        data: "adders",
+                        name: "adders",
+                        className: "text-wrap adders-column"
                     },
-                     {
-                        data: "zip_code",
-                        name: "zip_code"
-                    },
-                     {
-                        data: "city",
-                        name: "city"
-                    },
-                   
                     {
                         data: 'action',
                         name: 'action',

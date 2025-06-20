@@ -7,19 +7,20 @@
 @section('css')
     <!-- DataTables -->
     <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/25.3.1/build/css/intlTelInput.min.css" />
-
-<style>
-.iti {
-  width: 100%;
+    <style>
+        .adders-column {
+    max-width: 250px; /* or whatever width you prefer */
+    white-space: normal !important;
+    word-wrap: break-word;
 }
-
-.iti input {
-  width: 100%;
-  padding-left: 50px; /* ensure space for flag dropdown */
+.table-image{
+    width: 100%;
+    height: 100px;
+    object-fit: contain;
 }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-</style>
 @endsection
 
 @section('content')
@@ -36,19 +37,16 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title d-flex justify-content-between align-items-center">
-                        <span>Users</span>
-                        <button class="btn btn-primary float-end" data-location-id = "{{$location_id}}" id="btn-add">Add</button>
+                        <span>Categories</span>
                     </h4>
-                    <table id="user-table" class="table table-bordered dt-responsive  nowrap w-100">
+                    <table id="category-table" class="table table-bordered dt-responsive  nowrap w-100">
                         <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>First Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Country</th>
-                                <th>Zip Code</th>
-                                <th>City</th>
+                                <th>Name</th>
+                                <th>thumbnail</th>
+                                <th>detail Detail Photo</th>
+                                <th>Adders</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -57,9 +55,7 @@
             </div>
         </div> <!-- end col -->
     </div> <!-- end row -->
-    @include('admin.user.modal.setup-hl-user')
-    @include('admin.user.modal.add')
-    @include('admin.user.modal.edit')
+    @include('admin.category.modal.edit')
 
 @endsection
 @section('script')
@@ -69,7 +65,8 @@
     <script src="{{ URL::asset('/assets/libs/pdfmake/pdfmake.min.js') }}"></script>
     <!-- Datatable init js -->
     <script src="{{ URL::asset('/assets/js/pages/datatables.init.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/25.3.1/build/js/intlTelInput.min.js"></script>
-    @include('admin.user.datatable')
-    @include('admin.user.script')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    @include('admin.category.datatable')
+    @include('admin.category.script')
 @endsection

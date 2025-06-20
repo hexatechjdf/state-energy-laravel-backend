@@ -194,5 +194,6 @@ return [
   "first" => "first",
   "last" => "last",
   "Users" => 'Users',
+  "Categories" => 'Categories',
 
 ];

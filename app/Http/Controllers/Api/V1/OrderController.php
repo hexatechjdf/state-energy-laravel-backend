@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\OrderStoreRequest;
+use App\Http\Resources\Api\V1\OrderResource;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -14,12 +16,12 @@ class OrderController extends Controller
     // Add to Order
     public function store(OrderStoreRequest $request)
     {
-        
+
         $user = auth()->user();
         $cartItems = Cart::where('user_id', $user->id)->get();
 
         if ($cartItems->isEmpty()) {
-            return response()->json(['message' => 'Cart is empty'], 400);
+            return errorResponse('Cart is empty');
         }
 
         // Calculate total cart amount
@@ -28,7 +30,6 @@ class OrderController extends Controller
         // Calculate order amount (total - loan_financed_amount)
         $loanFinanced = $request->loan_financed_amount ?? 0;
         $orderAmount = $totalAmount - $loanFinanced;
-
         // Create order
         $order = Order::create([
             'user_id'                 => $user->id,
@@ -44,7 +45,7 @@ class OrderController extends Controller
             'loan_financed_amount'    => $loanFinanced,
             'finance_provider'        => $request->finance_provider,
             'total_amount'            => $totalAmount,
-            'order_amount'            => $orderAmount,
+            'order_amount'            => $orderAmount ?? 0.00,
         ]);
 
         // Move cart items to order items
@@ -52,50 +53,47 @@ class OrderController extends Controller
             OrderItem::create([
                 'order_id'      => $order->id,
                 'category_id'   => $item->category_id,
-                'configuration' => $item->configuration,
-                'adders'        => $item->adders,
-                'price'   => $item->price,
+                'configuration' => json_encode($item->configuration),
+                'adders'        => json_encode($item->adders),
+                'unit_price'    => $item->price,
+                'total_price'   => $item->price,
             ]);
         }
 
         // Clear user's cart
         Cart::where('user_id', $user->id)->delete();
-
-        return response()->json([
+        return successResponse([
             'message' => 'Order created successfully',
-            'order'   => $order
+            'order'  => new OrderResource($order),
         ]);
     }
     public function index()
     {
         $orders = Order::where('user_id', Auth::id())->with('orderItems')->get();
-        return response()->json($orders);
+        return successResponse([
+            'order'  => OrderResource::collection($orders),
+        ]);
     }
 
     public function show($id)
     {
         $order = Order::with('orderItems')->where('user_id', Auth::id())->findOrFail($id);
-        return response()->json($order);
+        return successResponse([
+            'message' => 'Order created successfully',
+            'order'  => new OrderResource($order),
+        ]);
     }
 
-   public function destroy($id)
+    public function destroy($id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
         if ($order->status !== 'pending') {
-            return response()->json([
-                'message' => 'Only pending orders can be deleted.'
-            ], 403);
+            return errorResponse('Only pending orders can be deleted.');
         }
-
         $order->delete();
-
-        return response()->json([
-            'message' => 'Order deleted successfully.'
+        return successResponse([
+            'message' => 'Order created successfully',
         ]);
     }
-
-   
 }
-
-?>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\gCache;
 use App\Models\Setting;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,4 +33,18 @@ if (!function_exists('errorResponse')) {
 function loginUser()
 {
     return auth()->user();
+}
+function save_settings($key, $value = '', $user_id = null)
+{
+    $setting = Setting::updateOrCreate(
+        ['key' => $key, 'user_id' => $user_id,],
+        [
+            'value' => $value,
+            'user_id' => $user_id,
+            'key' => $key,
+        ]
+    );
+    $cacheKey = 'setting_' . $user_id . '_' . $key;
+    gCache::put($cacheKey, $value);
+    return $setting;
 }

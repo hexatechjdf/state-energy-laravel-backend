@@ -35,8 +35,8 @@ if (!function_exists('getDateRangeByFilter')) {
                 break;
 
             default:
-                $startTime = now()->startOfDay();
-                $endTime = now()->endOfDay();
+                $startTime = now()->startOfYear();
+                $endTime = now()->endOfYear();
                 break;
         }
 

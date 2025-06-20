@@ -12,6 +12,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Setting;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -67,15 +68,15 @@ class UserController extends Controller
     }
     public function getAppointment(Request $request)
     {
-        $user = \Auth::user();
-        $filter = $request->get('filter', 'today');
+        $user = User::where('role_id',User::ROLE_ADMIN)->first();
+        $filter = $request->get('filter', '');
         $customStart = $request->get('start');
         $customEnd = $request->get('end');
-
+        $location_id = getSettingValue($user->id, 'location_id', '');
         $range = getDateRangeByFilter($filter, $customStart, $customEnd);
         $fetchCalendarEvent = CRM::crmV2(
             $user->id,
-            'calendars/events?locationId=' . $user->location_id .
+            'calendars/events?locationId=' . $location_id .
                 '&startTime=' . $range['start'] .
                 '&endTime=' . $range['end'] .
                 '&userId=' . $user->user_id,
@@ -83,7 +84,7 @@ class UserController extends Controller
             '',
             [],
             true,
-            $user->location_id
+            $location_id
         );
         if (is_string($fetchCalendarEvent)) {
             $fetchCalendarEvent = json_decode($fetchCalendarEvent, true);
@@ -107,6 +108,22 @@ class UserController extends Controller
 
         if ($fetchHLUsers && property_exists($fetchHLUsers, 'users')) {
             return successResponse($fetchHLUsers);
+        }
+        return errorResponse('Invalid JWT');
+    }
+    public function getCRMContact(Request $request)
+    {
+        $user = User::where('role_id',User::ROLE_ADMIN)->first();
+        if (!$user) {
+            return errorResponse('Invalid User');
+        }
+        $fetchHLContact = CRM::crmV2($user->id, 'contacts/'.$request->contact_id.'?locationId=' . $user->location_id, 'get', '', [], true, $user->location_id);
+        if (is_string($fetchHLContact)) {
+            $fetchHLContact = json_decode($fetchHLContact, true);
+        }
+
+        if ($fetchHLContact && property_exists($fetchHLContact, 'contact')) {
+            return successResponse($fetchHLContact);
         }
         return errorResponse('Invalid JWT');
     }

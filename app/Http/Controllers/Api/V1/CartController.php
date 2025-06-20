@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
@@ -34,6 +35,8 @@ class CartController extends Controller
             'user_id'       => auth()->id(),
             'category_id'   => $request['category_id'],
             'configuration' => $request['configuration'],
+            'configuration_meta' => $category->configuration,
+            'pricing_meta'  => $category->pricing,
             'adders'        => $request['adders'] ?? [],
             'price'         => $price
         ]);
@@ -73,7 +76,9 @@ class CartController extends Controller
         $cartItem->update([
             'configuration' => $newConfig,
             'adders'        => $newAdders,
-            'price'         => $price
+            'price'         => $price,
+            'configuration_meta' => $category->configuration,
+            'pricing_meta'  => $category->pricing,
         ]);
         return successResponse([
             'cart'  => new CartResource($cartItem),
@@ -86,7 +91,7 @@ class CartController extends Controller
         $cartItem = Cart::where('user_id', auth()->id())->findOrFail($id);
         $cartItem->delete();
         return successResponse([
-            'result'  => null,
+            'message'  => 'cart item removed successfully.',
         ]);
     }
 
@@ -95,9 +100,7 @@ class CartController extends Controller
     {
         Cart::where('user_id', auth()->id())->delete();
         return successResponse([
-            'result'  => null,
+            'message' => 'Cart Clear Successfully.'
         ]);
     }
 }
-
-?>

@@ -20,7 +20,8 @@ class Order extends Model
         'loan_financed_amount',
         'finance_provider',
         'total_amount',
-        'status'
+        'status',
+        "order_amount"
     ];
     public function orderItems()
     {

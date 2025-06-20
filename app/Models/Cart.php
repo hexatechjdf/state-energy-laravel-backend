@@ -10,7 +10,9 @@ class Cart extends Model
         'category_id',
         'configuration',
         'adders',
-        'price'
+        'price',
+        'configuration_meta',
+        'pricing_meta'
     ];
 
     protected $casts = [

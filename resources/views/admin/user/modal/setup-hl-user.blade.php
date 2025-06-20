@@ -1,9 +1,9 @@
 <!-- Setup Hpp Modal -->
 <div class="modal" id="assignHLUser" tabindex="-1" aria-labelledby="assignHLUserLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="setup-hpp-form">
+        <form id="assign-hl-form">
             @csrf
-            <input type="hidden" name="location_id" id="location_id">
+            <input type="hidden" id="uuid" name="uuid"/>
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="assignHLUserLabel">Assign HL User</h5>

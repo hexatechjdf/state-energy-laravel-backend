@@ -40,7 +40,7 @@ class HomeController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
             if ($user->role_id == User::ROLE_ADMIN) {
-                return redirect()->route('admin.setting');
+                return redirect()->route('admin.user.index');
             } 
         }
         return redirect()->route('login');
