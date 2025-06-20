@@ -53,7 +53,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Update Category</button>
+          <button type="submit" class="btn btn-primary">Update Category</button>
         </div>
       </div>
     </form>

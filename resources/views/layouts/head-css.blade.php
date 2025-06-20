@@ -10,8 +10,30 @@
 <link href="{{ URL::asset('/assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <style>
     .pagination.pagination-bordered li {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-}
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+    }
+
+    .topnav .navbar-nav .dropdown-item.active,
+    .topnav .navbar-nav .dropdown-item:hover,
+    .topnav .navbar-nav .nav-item .nav-link.active {
+        color: #002b5c;
+    }
+
+    .page-item.active .page-link {
+        background-color: #002b5c;
+        border-color: #002b5c
+    }
+
+    .text-primary {
+        color: #002b5c !important;
+
+    }
+
+    .btn-primary {
+        background-color: #002B5C !important;
+        border-color: #002b5c !important;
+
+    }
 </style>

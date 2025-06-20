@@ -1,7 +1,7 @@
 @extends('layouts.master-layouts')
 
 @section('title')
-    @lang('translation.Users')
+    @lang('translation.Categories')
 @endsection
 
 @section('css')
@@ -9,18 +9,18 @@
     <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .adders-column {
-    max-width: 250px; /* or whatever width you prefer */
-    white-space: normal !important;
-    word-wrap: break-word;
-}
-.table-image{
-    width: 100%;
-    height: 100px;
-    object-fit: contain;
-}
+            max-width: 250px;
+            white-space: normal !important;
+            word-wrap: break-word;
+        }
+
+        .table-image {
+            width: 100%;
+            height: 100px;
+            object-fit: contain;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 @endsection
 
 @section('content')
@@ -56,7 +56,6 @@
         </div> <!-- end col -->
     </div> <!-- end row -->
     @include('admin.category.modal.edit')
-
 @endsection
 @section('script')
     <!-- Required datatable js -->

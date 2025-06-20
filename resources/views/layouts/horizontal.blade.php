@@ -22,7 +22,7 @@ if($user)
         <span class="visually-hidden">Loading...</span>
     </div>
 </div>
-<header id="page-topbar" style="padding: 0.5rem;background-color: {{ $color['header_color'] ?? '#5773f0' }}">
+<header id="page-topbar" style="padding: 0.5rem;background-color: {{ $color['header_color'] ?? 'white' }}">
     <div class="navbar-header">
         <div class="d-flex">
             <!-- LOGO -->
@@ -50,7 +50,7 @@ if($user)
             @if (Auth::check())
             @if (Auth::user()->role_id == App\Models\User::ROLE_ADMIN)
             <div class="dropdown d-inline-block">
-                <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
+                <button type="button" class="btn header-item waves-effect" style="color: #002b5c" id="page-header-user-dropdown"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img class="rounded-circle header-profile-user"
                         src="{{ isset(Auth::user()->avatar) ? asset(Auth::user()->avatar_url) : asset('/assets/images/users/avatar-1.jpg') }}"

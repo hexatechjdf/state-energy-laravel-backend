@@ -1,171 +1,280 @@
 @extends('layouts.master-without-nav')
 
 @section('title')
-@lang('translation.Login')
+    @lang('translation.Login')
 @endsection
 
 @section('css')
-<!-- owl.carousel css -->
     <link rel="stylesheet" href="{{ URL::asset('/assets/libs/owl.carousel/owl.carousel.min.css') }}">
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background-color: #ffffff !important;
+        }
+
+        .auth-page-bg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-card {
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            width: 1400px;
+            max-width: 95%;
+            height: 750px;
+            min-height: 750px;
+            max-height: 750px;
+        }
+
+        .login-left-image {
+            background: url('{{ URL::asset('/assets/images/left-side-login.png') }}') no-repeat center center;
+            background-size: contain;
+            width: 50%;
+            border-radius: 20px 20px 20px 20px;
+        }
+
+        .login-right-form {
+            padding: 50px 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .auth-logo {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+        }
+
+        .auth-logo img {
+            height: 55px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            height: 45px;
+            border-radius: 8px;
+        }
+
+        .form-check {
+            margin: 20px 0;
+        }
+
+        /* Mobile Responsive */
+       /* Phones (≤425px) */
+@media (max-width: 425px) {
+    .auth-card {
+        flex-direction: column;
+        width: 95%;
+        height: auto;
+        min-height: auto;
+        max-height: none;
+        border-radius: 20px;
+    }
+
+    .login-left-image {
+        display: none;
+    }
+
+    .login-right-form {
+        padding: 30px 20px;
+    }
+
+    .auth-logo {
+        top: 20px;
+        left: 20px;
+    }
+
+    .btn-primary {
+        width: 100% !important;
+    }
+
+    .d-flex {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+}
+
+/* Small Tablets (426px - 767px) */
+@media (max-width: 767px) and (min-width: 426px) {
+    .auth-card {
+        flex-direction: column;
+        width: 95%;
+        height: auto;
+        min-height: auto;
+        max-height: none;
+        border-radius: 20px;
+    }
+
+    .login-left-image {
+        display: none;
+    }
+
+    .login-right-form {
+        padding: 40px 30px;
+    }
+
+    .auth-logo {
+        top: 25px;
+        left: 30px;
+    }
+
+    .btn-primary {
+        width: 50% !important;
+    }
+
+    .d-flex {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+}
+
+/* Medium Devices (768px - 991px) */
+@media (max-width: 991px) and (min-width: 768px) {
+    .auth-card {
+        width: 95%;
+        height: auto;
+        min-height: auto;
+        max-height: none;
+        flex-direction: row;
+        border-radius: 20px;
+    }
+
+    .login-left-image {
+        width: 45%;
+        background-size: cover;
+    }
+
+    .login-right-form {
+        padding: 50px 35px;
+    }
+
+    .auth-logo {
+        top: 10px;
+        left: 30px;
+    }
+}
+
+        .form-check-input:checked {
+            background-color: #002b5c !important;
+            border-color: #002b5c !important
+        }
+
+        .btn-primary {
+            background-color: #002B5C !important;
+            color: #ffffff !important;
+            border: none !important;
+            padding: 14px 0 !important;
+            border-radius: 6px !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            width: 40% !important;
+            text-align: center !important;
+            transition: background-color 0.3s ease !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #003366 !important;
+            color: #ffffff !important;
+        }
+
+        .btn-outline-secondary:hover,
+        .btn-outline-secondary:focus,
+        .btn-outline-secondary:active,
+        .btn-outline-secondary {
+            background-color: unset !important;
+            color: unset !important;
+            border-color: #ced4da !important;
+
+        }
+
+        .btn-primary:focus,
+        .btn-primary:active {
+            background-color: #001F3F !important;
+            color: #ffffff !important;
+            outline: none !important;
+            border: none !important;
+        }
+    </style>
 @endsection
 
-@section('body')
 
-<body class="auth-body-bg">
-    @endsection
 
-    @section('content')
+@section('content')
+    <div class="auth-page-bg">
+        <div class="auth-card">
 
-    <div>
-        <div class="container-fluid p-0">
-            <div class="row g-0">
+            <div class="login-left-image"></div>
 
-                <div class="col-xl-9">
-                    <div class="auth-full-bg pt-lg-5 p-4">
-                        <div class="w-100">
-                            <div class="bg-overlay"></div>
-                            <div class="d-flex h-100 flex-column">
+            <div class="login-right-form">
 
-                                <div class="p-4 mt-auto">
-                                    <div class="row justify-content-center">
-                                        <div class="col-lg-7">
-                                            <div class="text-center">
+                <div class="auth-logo">
+                    <img src="{{ URL::asset('/assets/images/logo-dark.png') }}" alt="State Energy">
+                </div>
 
-                                                <h4 class="mb-3"><i class="bx bxs-quote-alt-left text-primary h1 align-middle me-3"></i><span class="text-primary">5k</span>+ Satisfied clients</h4>
+                <h4 class="mb-3 mt-5 pt-4">Login!</h4>
+                <p class="text-muted mb-4">Enter authorized email address & password.</p>
 
-                                                <div dir="ltr">
-                                                    <div class="owl-carousel owl-theme auth-review-carousel" id="auth-review-carousel">
-                                                        <div class="item">
-                                                            <div class="py-3">
-                                                                <p class="font-size-16 mb-4">" Fantastic theme with a
-                                                                    ton of options. If you just want the HTML to
-                                                                    integrate with your project, then this is the
-                                                                    package. You can find the files in the 'dist'
-                                                                    folder...no need to install git and all the other
-                                                                    stuff the documentation talks about. "</p>
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
 
-                                                                <div>
-                                                                    <h4 class="font-size-16 text-primary">Abs1981</h4>
-                                                                    <p class="font-size-14 mb-0">- Skote User</p>
-                                                                </div>
-                                                            </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input name="email" type="email" class="form-control" id="email"
+                            placeholder="superman@mystateenergy.com" required autofocus>
+                    </div>
 
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <div class="py-3">
-                                                                <p class="font-size-16 mb-4">" If Every Vendor on Envato
-                                                                    are as supportive as Themesbrand, Development with
-                                                                    be a nice experience. You guys are Wonderful. Keep
-                                                                    us the good work. "</p>
-
-                                                                <div>
-                                                                    <h4 class="font-size-16 text-primary">nezerious</h4>
-                                                                    <p class="font-size-14 mb-0">- Skote User</p>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">New Password</label>
+                        <div class="input-group">
+                            <input type="password" name="password" class="form-control" id="password"
+                                placeholder="Password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="toggle-password">
+                                <i class="mdi mdi-eye-outline"></i>
+                            </button>
                         </div>
                     </div>
-                </div>
-                <!-- end col -->
 
-                <div class="col-xl-3">
-                    <div class="auth-full-page-content p-md-5 p-4">
-                        <div class="w-100">
 
-                            <div class="d-flex flex-column h-100">
-                                <div class="mb-4 mb-md-5">
-                                    <a href="#" class="d-block auth-logo">
-                                        <img src="{{ URL::asset('/assets/images/logo-dark.png') }}" alt="" height="18" class="auth-logo-dark">
-                                        <img src="{{ URL::asset('/assets/images/logo-light.png') }}" alt="" height="18" class="auth-logo-light">
-                                    </a>
-                                </div>
-                                <div class="my-auto">
 
-                                    <div>
-                                        <h5 class="text-primary">Welcome Back !</h5>
-                                        <p class="text-muted">Sign in to continue to {{ env('APP_NAME','Laravel') }}.</p>
-                                    </div>
-
-                                    <div class="mt-4">
-                                        <form class="form-horizontal" method="POST" action="{{ route('login') }}">
-                                            @csrf
-                                            <div class="mb-3">
-                                                <label for="username" class="form-label">Email</label>
-                                                <input name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" id="username" placeholder="Enter Email" autocomplete="email" autofocus>
-                                                @error('email')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <div class="float-end">
-                                                    @if (Route::has('password.request'))
-                                                    <a href="{{ route('password.request') }}" class="text-muted">Forgot password?</a>
-                                                    @endif
-                                                </div>
-                                                <label class="form-label">Password</label>
-                                                <div class="input-group auth-pass-inputgroup @error('password') is-invalid @enderror">
-                                                    <input type="password" name="password" class="form-control  @error('password') is-invalid @enderror" id="userpassword" value="" placeholder="Enter password" aria-label="Password" aria-describedby="password-addon">
-                                                    <button class="btn btn-light " type="button" id="password-addon"><i class="mdi mdi-eye-outline"></i></button>
-                                                    @error('password')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                    @enderror
-                                                </div>
-                                            </div>
-
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="remember">
-                                                    Remember me
-                                                </label>
-                                            </div>
-
-                                            <div class="mt-3 d-grid">
-                                                <button class="btn btn-primary waves-effect waves-light" type="submit">Log
-                                                    In</button>
-                                            </div>
-                                        </form>
-                                        <div class="mt-5 text-center">
-                                            {{-- <p>Don't have an account ? <a href="{{ url('register') }}" class="fw-medium text-primary"> Signup now </a> </p> --}}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- <div class="mt-4 mt-md-5 text-center">
-                                    <p class="mb-0">© <script>
-                                            document.write(new Date().getFullYear())
-                                        </script> {{ env('APP_NAME','Laravel') }}. Crafted with <i class="mdi mdi-heart text-danger"></i> by
-                                        jdfunnel</p>
-                                </div> --}}
-                            </div>
+                    <div class="d-flex" style="justify-content: space-between;">
+                        <div class="form-check">
+                            <input type="checkbox" name="remember" class="form-check-input" id="remember">
+                            <label class="form-check-label" for="remember">Stay Signed In</label>
                         </div>
+                        <button class="btn btn-primary" type="submit">Login</button>
                     </div>
-                </div>
-                <!-- end col -->
+                </form>
+
             </div>
-            <!-- end row -->
-        </div>
-        <!-- end container-fluid -->
-    </div>
 
-    @endsection
-    @section('script')
-    <!-- owl.carousel js -->
-    <script src="{{ URL::asset('/assets/libs/owl.carousel/owl.carousel.min.js') }}"></script>
-    <!-- auth-2-carousel init -->
-    <script src="{{ URL::asset('/assets/js/pages/auth-2-carousel.init.js') }}"></script>
-    @endsection
+        </div>
+    </div>
+@endsection
+
+@section('script')
+    <script>
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const passwordField = document.getElementById('password');
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('mdi-eye-outline');
+            this.querySelector('i').classList.toggle('mdi-eye-off-outline');
+        });
+    </script>
+@endsection

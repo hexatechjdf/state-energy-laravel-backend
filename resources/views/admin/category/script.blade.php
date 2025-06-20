@@ -25,7 +25,7 @@
       <div class="row align-items-center mb-2 adder-row">
         <div class="col-md-6"><input type="text" class="form-control" name="adders_names[]" placeholder="Adder Name" value="${name}"></div>
         <div class="col-md-4"><input type="number" step="0.01" class="form-control" name="adders_prices[]" placeholder="Price" value="${price}"></div>
-        <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm btn-remove-adder">X</button></div>
+        <div class="col-md-2"><button type="button" class="btn btn-primary btn-sm btn-remove-adder">X</button></div>
       </div>`;
     editAddersSelect.append(html);
   }
@@ -100,7 +100,7 @@ function optionRow(index, value = '', price = null, subCat = null, withPricing =
   return `<div class="input-group mb-1 option-row">
     <input type="text" class="form-control ${withPricing ? '' : 'parent-option-input'}" data-row-id="${uniqueRowId}" data-index="${index}" name="config_fields[${index}][options]${subCat ? `[${subCat}]` : ''}[]" value="${value}" placeholder="Option Label">
     ${pricingField}
-    <button type="button" class="btn btn-danger btn-sm btn-remove-option">X</button>
+    <button type="button" class="btn btn-primary btn-sm btn-remove-option">X</button>
   </div>`;
 }
 function renderOptionsWithPricing(options = [], index, pricing = {}) {
