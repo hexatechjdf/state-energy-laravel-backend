@@ -97,11 +97,14 @@ class UserController extends Controller
     }
     public function getHLUsers(Request $request)
     {
-        $user = \Auth::user() ?? User::where('location_id', $request->location_id)->first();
+        $user = User::where('role_id',User::ROLE_ADMIN)->first();
+        $locationId = $request->location_id??null;
+        if(!isset($locationId))
+            $locationId = getSettingValue($user->id, 'location_id', null);
         if (!$user) {
             return errorResponse('Invalid User');
         }
-        $fetchHLUsers = CRM::crmV2($user->id, 'users?locationId=' . $user->location_id, 'get', '', [], true, $user->location_id);
+        $fetchHLUsers = CRM::crmV2($user->id, 'users?locationId=' . $locationId, 'get', '', [], true, $locationId);
         if (is_string($fetchHLUsers)) {
             $fetchHLUsers = json_decode($fetchHLUsers, true);
         }
