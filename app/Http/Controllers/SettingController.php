@@ -21,17 +21,7 @@ class SettingController extends Controller
     {
         $user = loginUser();
         $settings = Setting::where('user_id', $user->id)->pluck('value', 'key')->toArray();
-        $locationId = $settings['location_id'];
-        $emailTemplatesList = CRM::crmV2(
-            $user->id,
-            'emails/builder?limit=100&locationId=' . $locationId,
-            'get',
-            '',
-            [],
-            true,
-            $locationId
-        );
-        return view('setting.index', compact('settings', 'user', 'emailTemplatesList'));
+        return view('setting.index', compact('settings', 'user'));
     }
 
     /**
