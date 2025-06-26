@@ -26,11 +26,11 @@
             overflow: hidden;
             display: flex;
             flex-direction: row;
-            width: 1400px;
+            width: 1000px;
             max-width: 95%;
             height: 750px;
-            min-height: 750px;
-            max-height: 750px;
+            min-height: 650px;
+            max-height: 650px;
         }
 
         .login-left-image {

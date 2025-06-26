@@ -20,6 +20,9 @@ class CategoryResource extends JsonResource
             'adders'         => $this->adders->map(fn($adder) => [
                 'id'    => $adder->id,
                 'name'  => $adder->name,
+                'type' => $adder->type==0 ? 'linear' : 'dynamic',
+                'min_qty' => $adder->min_qty,
+                'max_qty' => $adder->max_qty,
                 'price' => $adder->price,
             ]),
         ];

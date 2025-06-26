@@ -21,10 +21,16 @@ class Order extends Model
         'finance_provider',
         'total_amount',
         'status',
-        "order_amount"
+        "order_amount",
+        "appointment_id",
+        "contact_id"
     ];
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+    public function user()
+    {
+        return $this->hasOne(User::class);
     }
 }

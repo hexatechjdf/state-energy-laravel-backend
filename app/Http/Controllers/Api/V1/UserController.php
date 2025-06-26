@@ -117,10 +117,11 @@ class UserController extends Controller
     public function getCRMContact(Request $request)
     {
         $user = User::where('role_id',User::ROLE_ADMIN)->first();
+        $locationId = getSettingValue($user->id, 'location_id', '');
         if (!$user) {
             return errorResponse('Invalid User');
         }
-        $fetchHLContact = CRM::crmV2($user->id, 'contacts/'.$request->contact_id.'?locationId=' . $user->location_id, 'get', '', [], true, $user->location_id);
+        $fetchHLContact = CRM::crmV2($user->id, 'contacts/'.$request->contact_id.'?locationId=' . $locationId, 'get', '', [], true, $locationId);
         if (is_string($fetchHLContact)) {
             $fetchHLContact = json_decode($fetchHLContact, true);
         }

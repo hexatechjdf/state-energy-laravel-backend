@@ -20,15 +20,46 @@
   }
 
   // Adder Rows
-  function addAdderRow(name = '', price = '') {
-    const html = `
-      <div class="row align-items-center mb-2 adder-row">
-        <div class="col-md-6"><input type="text" class="form-control" name="adders_names[]" placeholder="Adder Name" value="${name}"></div>
-        <div class="col-md-4"><input type="number" step="0.01" class="form-control" name="adders_prices[]" placeholder="Price" value="${price}"></div>
-        <div class="col-md-2"><button type="button" class="btn btn-primary btn-sm btn-remove-adder">X</button></div>
-      </div>`;
-    editAddersSelect.append(html);
-  }
+  function addAdderRow(name = '', price = '', type = 1, minQty = 1, maxQty = 1) {
+  const html = `
+    <div class="adder-row-wrapper mb-3">
+      <div class="row align-items-center adder-row">
+        <div class="col-md-3">
+          <input type="text" class="form-control" name="adders_names[]" placeholder="Adder Name" value="${name}">
+        </div>
+        <div class="col-md-2">
+          <input type="number" step="0.01" class="form-control" name="adders_prices[]" placeholder="Price" value="${price}">
+        </div>
+        <div class="col-md-2">
+          <select class="form-control" name="adders_types[]">
+            <option value="1" ${type === 1 ? 'selected' : ''}>Linear</option>
+            <option value="2" ${type === 2 ? 'selected' : ''}>Dynamic</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Min</span>
+            </div>
+            <input type="number" class="form-control" name="adders_min_qty[]" value="${minQty}" min="1">
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Max</span>
+            </div>
+            <input type="number" class="form-control" name="adders_max_qty[]" value="${maxQty}" min="1">
+          </div>
+        </div>
+        <div class="col-md-1">
+          <button type="button" class="btn btn-primary btn-sm btn-remove-adder">X</button>
+        </div>
+      </div>
+    </div>`;
+  editAddersSelect.append(html);
+}
+
 
   $(document).on('click', '#btn-add-adder', () => addAdderRow());
   $(document).on('click', '.btn-remove-adder', function () {
@@ -213,11 +244,13 @@ $(document).on('blur', '.parent-option-input', function () {
 
   // Edit Category Load
   $(document).on('click', '.btn-edit-category', function () {
+    $('#loader').show();
     const categoryId = $(this).data('id');
     $.ajax({
       url: `/admin/category/${categoryId}`,
       type: 'GET',
       success: res => {
+         $('#loader').hide();
         const category = res.category;
         $('#edit-category-form')[0].reset();
         $('#edit_category_id').val(category.id);
@@ -225,7 +258,7 @@ $(document).on('blur', '.parent-option-input', function () {
         $('#edit_thumbnail_preview').attr('src', category.thumbnail_url);
         $('#edit_detail_photo_preview').attr('src', category.detail_photo_url);
         editAddersSelect.empty();
-        category.adders.forEach(a => addAdderRow(a.name, a.price));
+        category.adders.forEach(a => addAdderRow(a.name, a.price, a.type,a.min_qty,a.max_qty));
         configFields = JSON.parse(category.configuration);
         const pricing = JSON.parse(category.pricing);
         $('#configuration_fields_container').empty();

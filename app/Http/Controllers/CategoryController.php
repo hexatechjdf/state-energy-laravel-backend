@@ -177,11 +177,17 @@ class CategoryController extends Controller
         // Handle Adders
         $adderNames  = $request->input('adders_names', []);
         $adderPrices = $request->input('adders_prices', []);
+        $adders_types = $request->input('adders_types', []);
+        $adders_min_qty = $request->input('adders_min_qty', []);
+        $adders_max_qty = $request->input('adders_max_qty', []);
 
         $adderIds = [];
 
         foreach ($adderNames as $i => $name) {
             $price = $adderPrices[$i] ?? 0;
+            $type = $adders_types[$i] ?? 0;
+            $min_qty = $adders_min_qty[$i] ?? 0;
+            $max_qty = $adders_max_qty[$i] ?? 0;
 
             // Check if adder with same name exists globally
             $adder = Adder::firstOrCreate(['name' => $name]);
@@ -189,9 +195,11 @@ class CategoryController extends Controller
             // If price differs, update it
             if ($adder->price != $price) {
                 $adder->price = $price;
-                $adder->save();
             }
-
+            $adder->type = $type;
+            $adder->min_qty = $min_qty;
+            $adder->max_qty = $max_qty;
+            $adder->save();
             $adderIds[] = $adder->id;
         }
 

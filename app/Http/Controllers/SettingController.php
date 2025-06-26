@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\CRM;
+use App\Helpers\CRM;
 use App\Models\Setting;
 use App\Models\User;
 use Exception;
@@ -20,13 +20,18 @@ class SettingController extends Controller
     public function index(Request $request)
     {
         $user = loginUser();
-        $settings = Setting::where('user_id',$user->id)->pluck('value', 'key')->toArray();
-        if($user->role_id == User::ROLE_LOCATION)
-        {
-            return view('location.setting.index', compact('settings'));
-            
-        }
-        return view('setting.index', compact('settings','user'));
+        $settings = Setting::where('user_id', $user->id)->pluck('value', 'key')->toArray();
+        $locationId = $settings['location_id'];
+        $emailTemplatesList = CRM::crmV2(
+            $user->id,
+            'emails/builder?limit=100&locationId=' . $locationId,
+            'get',
+            '',
+            [],
+            true,
+            $locationId
+        );
+        return view('setting.index', compact('settings', 'user', 'emailTemplatesList'));
     }
 
     /**
@@ -157,5 +162,47 @@ class SettingController extends Controller
             Log::error('SSO Decryption Error: ' . $e->getMessage());
             return response()->json(['status' => false, 'message' => 'An error occurred while processing your request.']);
         }
+    }
+    public function emailTemplateList(Request $request)
+    {
+        $user = loginUser();
+        $settings = Setting::where('user_id', $user->id)->pluck('value', 'key')->toArray();
+        $locationId = $settings['location_id'];
+
+        $searchQuery = $request->input('q', '');
+        $page = (int)$request->input('page', 1);
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        // Build query string with search, limit, offset, and locationId
+        $queryParams = http_build_query([
+            'name'     => $searchQuery,
+            'limit'      => $perPage,
+            'offset'     => $offset,
+            'locationId' => $locationId
+        ]);
+
+        // Call external API
+        $emailTemplatesList = CRM::crmV2(
+            $user->id,
+            'emails/builder?' . $queryParams,
+            'get',
+            '',
+            [],
+            true,
+            $locationId
+        );
+
+        // Extract builders array and total
+        $builders = $emailTemplatesList->builders ?? [];
+        $total = $emailTemplatesList->total[0]->total ?? 0;
+
+        // Return formatted Select2 compatible JSON
+        return response()->json([
+            'data'          => $builders,
+            'total'         => $total,
+            'per_page'      => $perPage,
+            'current_page'  => $page
+        ]);
     }
 }

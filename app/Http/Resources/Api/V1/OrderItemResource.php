@@ -13,10 +13,10 @@ class OrderItemResource extends JsonResource
             'id'             => $this->id,
             'order_id'             => $this->order_id,
             'category_id'             => $this->category_id,
+            'category'       => new CategoryResource($this->category),
             'configuration'             => json_decode($this->configuration),
             'adders'             => json_decode($this->adders),
             'address'             => $this->address,
-            'unit_price'             => $this->unit_price,
             'quantity'             => $this->quantity,
             'total_price'             => $this->total_price,
         ];

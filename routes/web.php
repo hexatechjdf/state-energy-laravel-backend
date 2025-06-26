@@ -14,6 +14,8 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
     Route::get('setting', [SettingController::class, 'index'])->name('setting');
     Route::post('/setting/save', [SettingController::class, 'store'])->name('setting.save');
 
+    Route::get('/email-templates/list', [SettingController::class, 'emailTemplateList'])->name('email-templates.list');
+
 
     Route::post('/store', [AdminController::class, 'store'])->name('users.store');
     Route::get('/users/{id}', [AdminController::class, 'show'])->name('users.show');

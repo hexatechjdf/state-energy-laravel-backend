@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Adder extends Model
 {
-    protected $fillable = ['name', 'price'];
+    protected $fillable = ['name', 'price','type','min_qty','max_qty'];
 
     public function categories()
     {

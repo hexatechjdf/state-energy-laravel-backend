@@ -24,7 +24,7 @@ class UserResource extends JsonResource
             'zip_code' => $this->zip_code,
             'country' => $this->country,
             'email' => $this->email,
-            'location_id' => $this->location_id,
+            'contact_id' => $this->contact_id,
             'user_id' => $this->user_id,
             'avatar' => $this->avatar,
             'avatar_url' => $this->avatar_url,
