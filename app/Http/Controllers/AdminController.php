@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\CRM;
 use App\Http\Requests\Api\V1\UserStoreRequest;
 use App\Http\Resources\UserResource;
+use App\Jobs\SendGhlWelcomeEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -15,6 +16,7 @@ class AdminController extends Controller
     public function store(UserStoreRequest $request)
     {
         $user = User::create($request->validated());
+        dispatch(new SendGhlWelcomeEmail($user,$request->password))->onQueue(config('app.env'));
         return successResponse(new UserResource($user), Response::HTTP_CREATED);
     }
     public function update(Request $request, $id)

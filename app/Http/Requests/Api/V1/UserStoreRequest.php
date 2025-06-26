@@ -31,7 +31,7 @@ class UserStoreRequest extends FormRequest
             'zip_code'   => 'sometimes|required|string|max:255',
             'email'      => 'required|email|unique:users,email',
             'password'   => 'required|string|min:8|confirmed',
-             'user_id'   => 'sometimes|required|string|max:255',
+            'user_id'   => 'sometimes|required|string|max:255',
         ];
     }
 }
