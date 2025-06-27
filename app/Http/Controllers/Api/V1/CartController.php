@@ -5,18 +5,22 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\CartStoreRequest;
 use App\Http\Requests\Api\V1\CartUpdateRequest;
+use App\Http\Requests\FinancingAmountRequest;
 use App\Http\Resources\Api\V1\CartResource;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Services\CartService;
+use App\Services\PriceCalculationService;
+use Illuminate\Support\Facades\Request;
 
 class CartController extends Controller
 {
     protected $cartService;
-
-    public function __construct(CartService $cartService)
+    protected $priceCalculationService;
+    public function __construct(CartService $cartService, PriceCalculationService $priceCalculationService)
     {
         $this->cartService = $cartService;
+        $this->priceCalculationService = $priceCalculationService;
     }
 
     // Add to Cart
@@ -102,5 +106,39 @@ class CartController extends Controller
         return successResponse([
             'message' => 'Cart Clear Successfully.'
         ]);
+    }
+    public function calculateFinancingAmount(FinancingAmountRequest $request)
+    {
+        $totalPrice = Cart::where('user_id', auth()->id())->sum('price');
+        if ($totalPrice == 0) {
+            return errorResponse('Cart is empty or contains no priced items.', 400);
+        }
+        if (!is_null($request->mosaic_apr)) {
+            // Calculate financing amounts
+            $mosaicAmount = $this->priceCalculationService->calculateFinance(
+                'mosaic',
+                $totalPrice,
+                $request->mosaic_apr
+            );
+        }
+        if (!is_null($request->renew_solar_apr)) {
+            $renewSolarAmount = $this->priceCalculationService->calculateFinance(
+                'renew_solar',
+                $totalPrice,
+                $request->renew_solar_apr
+            );
+        }
+        // Structure response data
+        $data = [
+            'mosaic_amount'      => $mosaicAmount ?? 0.00,
+            'renew_solar_amount' => $renewSolarAmount ?? 0.00
+        ];
+
+        return successResponse($data);
+    }
+    public function getFinanceProviderAPROptions()
+    {
+        $financeOptions = config("finance.finance_options");
+        return successResponse($financeOptions);
     }
 }

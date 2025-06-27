@@ -30,6 +30,7 @@ class OrderResource extends JsonResource
             "contact_id"            => $this->contact_id,
             'status'                => $this->status,
             'order_items'           => OrderItemResource::collection($this->orderItems),
+            'created_at'            => $this->created_at,
 
 
         ];

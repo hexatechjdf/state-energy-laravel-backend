@@ -6,7 +6,7 @@ use App\Models\Category;
 
 class CartService
 {
-    public function calculatePrice(Category $category, array $configValues, array $adders = [])
+    public function calculatePrice1(Category $category, array $configValues, array $adders = [])
     {
         $pricingRules = json_decode($category->pricing);
         $basePrice = 0;
@@ -42,41 +42,41 @@ class CartService
 
         return $basePrice;
     }
-    public function calculatePrice1(Category $category, array $configValues, array $adders = [])
+    public function calculatePrice(Category $category, array $configValues, array $adders = [])
     {
         $pricingRules = json_decode($category->pricing, true);
         $basePrice = 0;
-        $map = config('pricing_mappings')[$category->name] ?? [];
-
+        $baseUnitPrice = 0;
         switch ($category->name) {
             case 'Roof':
-                $type = $configValues[$map['pricing_field']];
+                $type = $configValues['category'];
                 $rate = $pricingRules[$type]['price_per_sqft'];
-                $basePrice += $rate * $configValues[$map['multiplier']];
+                $basePrice += $rate * $configValues['square_footage'];
                 break;
 
             case 'Solar':
-                $basePrice += $pricingRules['price_per_watt'] * ($configValues['number_of_panels'] * $configValues['panel_size']);
+                $baseUnitPrice = $pricingRules['price_per_watt'];
+                $basePrice += $baseUnitPrice * (($configValues['number_of_panels'] * $configValues['panel_size']));
                 if (isset($configValues['battery']) && $configValues['battery']) {
                     $basePrice += $pricingRules['battery'][$configValues['battery']];
                 }
                 break;
 
             case 'HVAC':
-                $sub = $configValues[$map['pricing_field']];
-                $capacity = $configValues[$map['dynamic_field']];
-                $basePrice += $pricingRules[$sub][$capacity];
+                $type = $configValues['sub_category'];
+                $capacity = $configValues['capacity'];
+                $basePrice = $pricingRules[$type][$capacity];
                 break;
 
             case 'Windows':
                 $area = ($configValues['height'] * $configValues['width']) / 144;
-                $basePrice += $area * $pricingRules['price_per_sqft'] * $configValues[$map['qty_field']];
+                $basePrice += $area * $pricingRules['price_per_sqft'] * $configValues['qty'];
                 break;
 
             case 'Doors':
-                $doorType = $configValues[$map['pricing_field']];
-                $price = $pricingRules[$doorType]['msrp'];
-                $basePrice += $price * $configValues[$map['qty_field']];
+                $doorType = $configValues['type'];
+                $price = $pricingRules[$doorType]['price'];
+                $basePrice += $price * $configValues['qty'];
                 break;
 
             case 'Water Heater':
@@ -90,20 +90,24 @@ class CartService
                 break;
 
             case 'Insulation':
-                $sub = $configValues[$map['pricing_field']];
-                $rVal = $configValues[$map['dynamic_field']];
-                $basePrice += $pricingRules[$sub][$rVal] * $configValues[$map['multiplier']];
+                $type = $configValues['sub_category'];
+                $basePrice = $configValues[$type['r_value']];
                 break;
 
             case 'Other':
-                $basePrice += $configValues[$map['price_field']];
+                $basePrice += $configValues['total_price'];
                 break;
         }
-
+        // dd($basePrice);  
+       
         foreach ($adders as $adder) {
-            $basePrice += $adder['price'];
+            $type = isset($adder['type']) ? $adder['type'] : 'linear';
+            if ($type == 'linear') {
+                $basePrice += $adder['price'];
+            } else {
+                $basePrice += $adder['price']*$baseUnitPrice;
+            }
         }
-
         return $basePrice;
     }
 }

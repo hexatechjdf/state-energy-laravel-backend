@@ -106,7 +106,7 @@
 
   function getPriceValue(option, pricing) {
     if (!pricing) return '';
-    if (pricing[option]) return pricing[option].price_per_sqft;
+    if (pricing[option]) return pricing[option].price_per_sqft ?? pricing[option].price ?? '';
     if (pricing.battery && pricing.battery[option]) return pricing.battery[option];
 
     for (const key in pricing) {

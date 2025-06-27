@@ -138,15 +138,18 @@ class CategoryController extends Controller
         $updatedFields  = [];
         $newPricing     = [];
         $index          = 0;
-
+        $finalPricingOptions = [];
+        $categoryOriginalPricing = json_decode($category->pricing);
         foreach ($existingConfig['fields'] as $field) {
             if (in_array($field['type'], ['select', 'dynamic_select'])) {
                 $fieldOptions = $request->input("config_fields.$index.options");
                 $fieldPricing = $request->input("config_fields.$index.pricing");
 
                 if ($fieldOptions) {
+                   
                     if (is_array($fieldOptions) && array_keys($fieldOptions) !== range(0, count($fieldOptions) - 1)) {
                         // dynamic_select with subcategories
+                        dd("dd");
                         foreach ($fieldOptions as $subCat => $options) {
                             foreach ($options as $option) {
                                 if (isset($field['pricing']) && $field['pricing'] === 'true') {
@@ -159,9 +162,26 @@ class CategoryController extends Controller
                         // regular select
                         foreach ($fieldOptions as $option) {
                             if (isset($field['pricing']) && $field['pricing'] === 'true') {
-                                $newPricing[$option] = [
-                                    'price_per_sqft' => $fieldPricing[$option] ?? null
-                                ];
+                                if ($category->name == 'Roof') {
+                                    $newPricing[$option] = [
+                                        'price_per_sqft' => $fieldPricing[$option] ?? null
+                                    ];
+                                }
+                                if ($category->name == 'Solar') {
+                                    $newPricing['price_per_watt'] = $categoryOriginalPricing->price_per_watt;
+                                    $newPricing['battery'][$option] = $fieldPricing[$option] ?? null;
+                                }
+                                if ($category->name == 'HVAC' || $category->name == 'Insulation') {
+                                    $newPricing[$option] = $fieldPricing[$option] ?? null;
+                                }
+                                if ($category->name == 'Doors') {
+                                     $newPricing[$option] = [
+                                        'price' => $fieldPricing[$option] ?? null
+                                    ];
+                                }
+                                if ($category->name == 'Insulation') {
+                                      $newPricing[$option] = $fieldPricing[$option] ?? null;
+                                }
                             }
                         }
                         $field['options'] = $fieldOptions;
@@ -173,7 +193,9 @@ class CategoryController extends Controller
                 $updatedFields[] = $field;
             }
         }
-
+        if($category->name == 'Windows'){
+            $newPricing  = $categoryOriginalPricing;
+        }
         // Handle Adders
         $adderNames  = $request->input('adders_names', []);
         $adderPrices = $request->input('adders_prices', []);

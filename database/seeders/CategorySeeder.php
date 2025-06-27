@@ -53,7 +53,6 @@ class CategorySeeder extends Seeder
             'detail_photo'   => 'category/solar-detail.png',
             'pricing' => json_encode([
                 'price_per_watt' => '5.50 ',
-                'formula' => 'panel_size*price_per_watt',
                 'battery' => [
                     '5.8 kilowatt' => '4500.00',
                     '7.6 kilowatt' => '5500.00',
@@ -196,22 +195,13 @@ class CategorySeeder extends Seeder
             'detail_photo'   => 'category/doors-detail.png',
             'pricing' => json_encode([
                 'Single Front Door' => [
-                    'cost'       => '1750.00',
-                    'msrp'       => '3150.00',
-                    'min_price'  => '2625.00',
-                    'max_price'  => '4375.00'
+                    'price'       => '3150.00',
                 ],
                 'Double Front Door' => [
-                    'cost'       => '3050.00',
-                    'msrp'       => '5490.00',
-                    'min_price'  => '4575.00',
-                    'max_price'  => '7625.00'
+                    'price'       => '5490.00',
                 ],
                 'Sliding Door' => [
-                    'cost'       => '2850.00',
-                    'msrp'       => '5130.00',
-                    'min_price'  => '4275.00',
-                    'max_price'  => '7125.00'
+                    'price'       => '5130.00',
                 ]
 
             ]),
@@ -233,7 +223,8 @@ class CategorySeeder extends Seeder
                         'label' => 'Type',
                         'type'  => 'select',
                         'options' => ['Single Front Door', 'Double Front Door', 'Sliding Door'],
-                        'name'  => 'type'
+                        'name'  => 'type',
+                        'pricing' => 'true',
                     ],
                     [
                         'label' => 'Frame Color',
@@ -349,7 +340,7 @@ class CategorySeeder extends Seeder
             'name'           => 'Other',
             'thumbnail'      => 'category/other-thumb.png',
             'detail_photo'   => 'category/other-detail.png',
-            'pricing'        => json_encode(['total_price' => '100.00']),
+            'pricing'        => json_encode([]),
             'configuration'  => json_encode([
                 'fields' => [
                     [
