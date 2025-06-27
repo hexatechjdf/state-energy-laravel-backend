@@ -72,6 +72,7 @@ class UserController extends Controller
         $filter = $request->get('filter', '');
         $customStart = $request->get('start');
         $customEnd = $request->get('end');
+        $loggedInUser = auth()->user();
         $location_id = getSettingValue($user->id, 'location_id', '');
         $range = getDateRangeByFilter($filter, $customStart, $customEnd);
         $fetchCalendarEvent = CRM::crmV2(
@@ -79,7 +80,7 @@ class UserController extends Controller
             'calendars/events?locationId=' . $location_id .
                 '&startTime=' . $range['start'] .
                 '&endTime=' . $range['end'] .
-                '&userId=' . $user->user_id,
+                '&userId=' . $loggedInUser->user_id,
             'get',
             '',
             [],
