@@ -149,7 +149,6 @@ class CategoryController extends Controller
                    
                     if (is_array($fieldOptions) && array_keys($fieldOptions) !== range(0, count($fieldOptions) - 1)) {
                         // dynamic_select with subcategories
-                        dd("dd");
                         foreach ($fieldOptions as $subCat => $options) {
                             foreach ($options as $option) {
                                 if (isset($field['pricing']) && $field['pricing'] === 'true') {

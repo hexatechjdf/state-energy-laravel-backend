@@ -69,14 +69,22 @@ class CartService
                 break;
 
             case 'Windows':
-                $area = ($configValues['height'] * $configValues['width']) / 144;
-                $basePrice += $area * $pricingRules['price_per_sqft'] * $configValues['qty'];
+                foreach($configValues['windows'] as $index => $window)
+                {
+                    $area = ($window['height'] * $window['width']) / 144;
+                    $basePrice += $area * $pricingRules['price_per_sqft'] * $window['qty'];
+                }
                 break;
 
             case 'Doors':
-                $doorType = $configValues['type'];
-                $price = $pricingRules[$doorType]['price'];
-                $basePrice += $price * $configValues['qty'];
+                
+                foreach($configValues['doors'] as $index => $door)
+                {
+                    $doorType = $door['type'];
+                    $area = ($door['height'] * $door['width']) / 144;
+                    $price = $pricingRules[$doorType]['price'];
+                    $basePrice += $area * $price * $door['qty'];
+                }
                 break;
 
             case 'Water Heater':
@@ -91,7 +99,8 @@ class CartService
 
             case 'Insulation':
                 $type = $configValues['sub_category'];
-                $basePrice = $configValues[$type['r_value']];
+                $rValue = $configValues['r_value'];
+                $basePrice = $pricingRules[$type][$rValue] * $configValues['square_footage'];
                 break;
 
             case 'Other':
