@@ -70,7 +70,7 @@ class SendGhlWelcomeEmail implements ShouldQueue
             // Save contact_id in user record
             $this->user->update(['contact_id' => $contactId]);
 
-            $loginUrl = config('app.url') . '/login';
+            $loginUrl = config('app.frontend_url') . '/login';
 
             $emailPayload = [
                 "type"      => "Email",
