@@ -97,6 +97,8 @@
             </div>
         </div> <!-- end col -->
 
+
+
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-body">
@@ -107,9 +109,7 @@
                             class="fw-bold fs-5">Settings </code>(bottom of the
                         sidebar), and select <code class="fw-bold fs-5"> Private Integration Token .</code> Click <code
                             class="fw-bold fs-5">Create New Integration, </code>enter a name and
-                        description, then proceed. On the next page, set the scopes to <code class="fw-bold fs-5">View Email
-                            Templates View Contacts, Edit Contacts, View
-                            Users, View Calendar Events and Edit Conversations.</code> Save the token, copy it, and paste it
+                        description, then proceed. On the next page, set the scopes to <code class="fw-bold fs-5">Edit Conversation Messages View Calendars Edit Calendars View Calendar Events Edit Calendar Events View Users Edit Conversations View Contacts View Email Templates Edit Contacts.</code> Save the token, copy it, and paste it
                         here along with the <code class="fw-bold fs-5"> Location ID </code>used to
                         generate it.</p>
                     <form class="needs-validation" novalidate id="onboarding-form">

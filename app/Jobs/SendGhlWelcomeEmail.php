@@ -103,10 +103,10 @@ class SendGhlWelcomeEmail implements ShouldQueue
             if (is_string($messageResponse)) {
                 $messageResponse = json_decode($messageResponse);
             }
-
-            if (!property_exists($messageResponse, 'id')) {
+            if (!property_exists($messageResponse, 'messageId')) {
                 \Log::error('Failed to send welcome email via GHL.', ['response' => $messageResponse]);
             }
+            \Log::info('Send A message api Response.', ['response' => $messageResponse]);
         } else {
             \Log::error('Failed to create or fetch contact from GHL.', ['response' => $contactResponse]);
         }
