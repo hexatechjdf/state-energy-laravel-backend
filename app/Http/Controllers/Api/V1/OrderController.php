@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\OrderStoreRequest;
 use App\Http\Resources\Api\V1\OrderResource;
 use App\Jobs\SendOrderToWebhook;
+use App\Jobs\UpdateContactInCRM;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -47,7 +48,9 @@ class OrderController extends Controller
             'finance_provider'        => $request->finance_provider,
             'total_amount'            => $totalAmount,
             'order_amount'            => $orderAmount ?? 0.00,
-        ]);
+            'appointment_id'          => $request->appointment_id ?? null,
+            'contact_id'              => $request->contact_id ?? null,
+    ]);
 
         // Move cart items to order items
         foreach ($cartItems as $item) {
@@ -64,6 +67,7 @@ class OrderController extends Controller
         // Clear user's cart
         Cart::where('user_id', $user->id)->delete();
         dispatch(new SendOrderToWebhook($order));
+        dispatch(new UpdateContactInCRM($order));
         return successResponse([
             'message' => 'Order created successfully',
             'order'  => new OrderResource($order),

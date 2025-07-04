@@ -9,12 +9,15 @@ use App\Http\Requests\Api\V1\PasswordChangeRequest;
 use App\Http\Requests\Api\V1\UserStoreRequest;
 use App\Http\Requests\Api\V1\UserUpdateRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Order;
 use App\Models\Setting;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\SendDispositionRequest;
 
 class UserController extends Controller
 {
@@ -68,7 +71,7 @@ class UserController extends Controller
     }
     public function getAppointment(Request $request)
     {
-        $user = User::where('role_id',User::ROLE_ADMIN)->first();
+        $user = User::where('role_id', User::ROLE_ADMIN)->first();
         $filter = $request->get('filter', '');
         $customStart = $request->get('start');
         $customEnd = $request->get('end');
@@ -98,9 +101,9 @@ class UserController extends Controller
     }
     public function getHLUsers(Request $request)
     {
-        $user = User::where('role_id',User::ROLE_ADMIN)->first();
-        $locationId = $request->location_id??null;
-        if(!isset($locationId))
+        $user = User::where('role_id', User::ROLE_ADMIN)->first();
+        $locationId = $request->location_id ?? null;
+        if (!isset($locationId))
             $locationId = getSettingValue($user->id, 'location_id', null);
         if (!$user) {
             return errorResponse('Invalid User');
@@ -117,12 +120,12 @@ class UserController extends Controller
     }
     public function getCRMContact(Request $request)
     {
-        $user = User::where('role_id',User::ROLE_ADMIN)->first();
+        $user = User::where('role_id', User::ROLE_ADMIN)->first();
         $locationId = getSettingValue($user->id, 'location_id', '');
         if (!$user) {
             return errorResponse('Invalid User');
         }
-        $fetchHLContact = CRM::crmV2($user->id, 'contacts/'.$request->contact_id.'?locationId=' . $locationId, 'get', '', [], true, $locationId);
+        $fetchHLContact = CRM::crmV2($user->id, 'contacts/' . $request->contact_id . '?locationId=' . $locationId, 'get', '', [], true, $locationId);
         if (is_string($fetchHLContact)) {
             $fetchHLContact = json_decode($fetchHLContact, true);
         }
@@ -148,5 +151,38 @@ class UserController extends Controller
         }
         $user->save();
         return successResponse(new UserResource($user->refresh()));
+    }
+    public function sendDisposition(SendDispositionRequest $request)
+    {
+        $user = loginUser();
+
+        $superAdmin = User::where('role_id', User::ROLE_ADMIN)->first();
+
+        if (!$superAdmin) {
+            return errorResponse('Super Admin not found.', 404);
+        }
+
+        $disposition_webhook_url = getSettingValue($superAdmin->id, 'disposition_webhook_url', '');
+
+        if (empty($disposition_webhook_url)) {
+            return errorResponse('Disposition webhook URL not configured.', 400);
+        }
+
+        $payload = [
+            'appointment_id'  => $request->appointment_id,
+            'contact_id'      => $request->contact_id,
+            'dispo'           => $request->disposition,
+            'dispo_note'      => $request->disposition_note,
+        ];
+
+        if (strtolower($request->disposition) === 'sale' ) {
+            $order = Order::where('user_id', $user->id)
+                ->where('appointment_id', $request->appointment_id)
+                ->first();
+
+            $payload['sale_amount'] = $order->total_amount ?? 0.00;
+        }
+        Http::post($disposition_webhook_url, $payload);
+        return successResponse(['message' => 'Disposition sent successfully.']);
     }
 }

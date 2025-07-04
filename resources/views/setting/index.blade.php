@@ -59,6 +59,38 @@
                 </div>
             </div>
         </div> <!-- end col -->
+ <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Webhook URL Disposition Payload</h4>
+                    <form class="needs-validation" novalidate id="disposition-setting-form" method="POST">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="disposition_webhook_url" class="form-label">
+                                        Webhook URL
+                                        <small class="text-muted d-block">This is the endpoint where disposition payload will be
+                                            sent.</small>
+                                    </label>
+                                    <input type="url" class="form-control" id="disposition_webhook_url"
+                                        name="setting[disposition_webhook_url]"
+                                        placeholder="https://your-webhook-endpoint.com/receive-order"
+                                        value="{{ $settings['disposition_webhook_url'] ?? '' }}" required>
+                                    <div class="valid-feedback">
+                                        Looks good!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> <!-- end col -->
 
         <div class="col-xl-12">
             <div class="card">
@@ -215,7 +247,7 @@
 
     <script>
         $(document).ready(function() {
-            $('#onboarding-form,#template-selection-form,#webhook-setting-form').on('submit',
+            $('#onboarding-form,#template-selection-form,#webhook-setting-form,#disposition-setting-form').on('submit',
                 function(e) {
                     e.preventDefault();
                     var $form = $(this);
