@@ -22,8 +22,8 @@ class SendDispositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'appointment_id'   => 'required|integer',
-            'contact_id'       => 'required|integer',
+            'appointment_id'   => 'required|string',
+            'contact_id'       => 'required|string',
             'disposition'      => 'required|string',
             'disposition_note' => 'nullable|string',
         ];
