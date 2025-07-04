@@ -75,7 +75,7 @@
                                     </label>
                                     <input type="url" class="form-control" id="disposition_webhook_url"
                                         name="setting[disposition_webhook_url]"
-                                        placeholder="https://your-webhook-endpoint.com/receive-order"
+                                        placeholder="https://your-webhook-endpoint.com"
                                         value="{{ $settings['disposition_webhook_url'] ?? '' }}" required>
                                     <div class="valid-feedback">
                                         Looks good!
