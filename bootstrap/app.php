@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Auth\AuthenticationException;
+
 require_once __DIR__ . '/../app/Support/CustomAliases.php';
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -29,11 +31,14 @@ return Application::configure(basePath: dirname(__DIR__))
                     $status  = 404;
                     $message = 'Resource not found.';
                     $errors  = [];
+                } elseif ($e instanceof AuthenticationException) {
+                    $status = 401;
+                    $message = 'Unauthenticated.';
+                    $errors = [];
                 } else {
                     $message = $e->getMessage();
                     $errors  = config('app.debug') ? $e->getTrace() : [];
                 }
-
                 return response()->json([
                     'success' => false,
                     'message' => $message,
