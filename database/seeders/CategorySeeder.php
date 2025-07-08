@@ -32,7 +32,7 @@ class CategorySeeder extends Seeder
                     [
                         'label' => 'Square Footage',
                         'type'  => 'number',
-                        'unit'  => 'sqft',
+                        'unit'  => 'sq',
                         'name'  => 'square_footage'
                     ],
                     [
