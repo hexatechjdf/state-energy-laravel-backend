@@ -7,45 +7,10 @@
             utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.0.10/js/utils.min.js"
         });
         // Open Edit Modal and Populate Data
-        $(document).on('click', '.btn-add-hpp', function() {
-            var locationId = $(this).data('location-id');
-            var uuid = $(this).data('id');
-            $('#uuid').val(uuid);
-            var selectedUserId = $(this).data('user-id') || '';
-            $('#loader').show();
-            $.ajax({
-                    url: `/api/v1/user/get-hl-user?location_id=${locationId}`,
-                    type: 'GET',
-                    success: function(response) {
-                        if (response.success) {
-                            var $userSelect = $('#user_id');
-                            $userSelect.empty(); // clear previous options
-                            $userSelect.append(`<option value="">Select a user</option>`); // default option
-                            
-                            $.each(response.data.users, function(index, user) {
-                                var selected = (user.id === selectedUserId) ? 'selected' : '';
-                                $userSelect.append(
-                                  `<option value="${user.id}" ${selected}>${user.name}</option>`
-                                ); });
-                        } else {
-                            toastr.error('Failed to load Users');
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error(xhr.responseJSON.message);
-
-                    },
-                    complete: function() {
-                        // Show modal after users loaded
-                        $('#loader').hide();
-                        $('#assignHLUser').modal('show');
-                    }
-                });
-        });
         $(document).on('click', '.btn-edit-user', function() {
              $('#loader').show();
             var uuid = $(this).data('id');
-            $('#uuid').val(uuid);
+            $('#edit_uuid').val(uuid);
             let selectedUserId = $(this).data('user-id');
             let locationId = $(this).data('location-id');
             $('#edit-user-form')[0].reset(); // clear form
@@ -92,16 +57,12 @@
         });
         $('#edit-user-form').on('submit', function(e) {
             e.preventDefault();
-
-            var uuid = $('#uuid').val()
-            var urlTemplate = "{{ route('admin.update.profile', ['id' => '__uuid__']) }}";
-            var url = urlTemplate.replace('__uuid__', uuid);
+            var url = "{{ route('admin.update.profile')}}";
             var dialCode = editPhoneIntlInput.getSelectedCountryData().dialCode;
             var form = $(this);
             form.find('input[name="dial_code"]').remove();
             form.append('<input type="hidden" name="dial_code" value="' + dialCode + '">');
             var data = form.serialize();
-
             $.ajax({
                 url: url,
                 type: 'POST',

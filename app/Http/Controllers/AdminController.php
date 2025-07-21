@@ -10,40 +10,51 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Arr;
 
 class AdminController extends Controller
 {
     public function store(UserStoreRequest $request)
     {
         $user = User::create($request->validated());
-        dispatch(new SendGhlWelcomeEmail($user,$request->password))->onQueue(config('app.env'));
+        dispatch(new SendGhlWelcomeEmail($user, $request->password))->onQueue(config('app.env'));
         return successResponse(new UserResource($user), Response::HTTP_CREATED);
     }
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        if ($request->ajax()) {
-            $user = User::find($id);
-            $user->update($request->all());
-            return successResponse(new UserResource($user->refresh()));
-        }
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'email' => 'required|email',
-            'password' => 'nullable|min:6',
+        // Validate request regardless of AJAX or not
+        $validated = $request->validate([
+            'uuid' => 'required',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'country' => 'nullable|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'zip_code' => 'nullable|string|max:20',
+            'user_id' => 'required',
+            'password' => 'nullable|string|min:6|confirmed',
         ]);
 
         try {
-            $user = loginUser();
+            $user = User::findOrFail($request->uuid);
+            $user->fill(Arr::except($validated, ['password', 'password_confirmation']));
 
-            // Update user details
-            $user->name = $request->username;
-            $user->email = $request->email;
-
+            // Only update password if filled
             if (!empty($request->password)) {
                 $user->password = bcrypt($request->password);
             }
+
             $user->save();
-            $message = !empty($request->password) ? 'User profile and password updated successfully' : 'User profile updated successfully';
+
+            if ($request->ajax()) {
+                return successResponse(new UserResource($user->refresh()));
+            }
+
+            $message = !empty($request->password)
+                ? 'User profile and password updated successfully'
+                : 'User profile updated successfully';
+
             return response()->json(['status' => 'Success', 'message' => $message]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 500);

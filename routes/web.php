@@ -20,7 +20,7 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
     Route::post('/store', [AdminController::class, 'store'])->name('users.store');
     Route::get('/users/{id}', [AdminController::class, 'show'])->name('users.show');
     Route::delete('/users/{id}', [AdminController::class, 'destroy'])->name('users.delete');
-    Route::post('/update-profile/{id}', [AdminController::class, 'update'])->name('update.profile');
+    Route::post('/update-profile', [AdminController::class, 'update'])->name('update.profile');
     Route::get('index', [AdminController::class, 'index'])->name('user.index');
     Route::post('/get-table-data', [AdminController::class, 'getTableData'])->name('user.table-data');
 
