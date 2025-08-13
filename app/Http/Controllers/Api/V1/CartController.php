@@ -44,7 +44,7 @@ class CartController extends Controller
             'adders'        => $request['adders'] ?? [],
             'price'         => $price,
             'appointment_id' => $request->get('appointment_id', null),
-        ])->load(['category', 'category.configuration', 'category.pricing']);
+        ])->load(['category']);
         return successResponse([
             'cart'  => new CartResource($cartItem),
         ]);
