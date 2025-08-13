@@ -24,6 +24,7 @@ class FinancingAmountRequest extends FormRequest
         return [
             'mosaic_apr'       => ['nullable', 'required_without_all:renew_solar_apr'],
             'renew_solar_apr'  => ['nullable', 'required_without_all:mosaic_apr'],
+            'appointment_id' => ['nullable', 'exists:appointments,id'],
         ];
     }
 

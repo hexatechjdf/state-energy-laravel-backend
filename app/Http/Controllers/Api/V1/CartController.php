@@ -42,18 +42,20 @@ class CartController extends Controller
             'configuration_meta' => $category->configuration,
             'pricing_meta'  => $category->pricing,
             'adders'        => $request['adders'] ?? [],
-            'price'         => $price
-        ]);
+            'price'         => $price,
+            'appointment_id' => $request->get('appointment_id', null),
+        ])->load(['category', 'category.configuration', 'category.pricing']);
         return successResponse([
             'cart'  => new CartResource($cartItem),
         ]);
     }
 
     // List Cart Items for Auth User
-    public function index()
+    public function index(Request $request)
     {
         $cartItems = Cart::with('category')
             ->where('user_id', auth()->id())
+            ->where('appointment_id', $request->get('appointment_id', null))
             ->get();
         return successResponse([
             'cart'  => CartResource::collection($cartItems),
@@ -63,7 +65,9 @@ class CartController extends Controller
     // Update Cart Item
     public function update(CartUpdateRequest $request, $id)
     {
-        $cartItem = Cart::where('user_id', auth()->id())->findOrFail($id);
+        $cartItem = Cart::where('user_id', auth()->id())
+        ->where('appointment_id', $request->get('appointment_id', null))
+        ->findOrFail($id);
 
 
         $category = $cartItem->category;
@@ -90,9 +94,11 @@ class CartController extends Controller
     }
 
     // Delete Single Cart Item
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $cartItem = Cart::where('user_id', auth()->id())->findOrFail($id);
+        $cartItem = Cart::where('user_id', auth()->id())
+        ->where('appointment_id', $request->get('appointment_id', null))
+        ->findOrFail($id);
         $cartItem->delete();
         return successResponse([
             'message'  => 'cart item removed successfully.',
@@ -100,16 +106,20 @@ class CartController extends Controller
     }
 
     // Clear Entire User Cart
-    public function clear()
+    public function clear(Request $request)
     {
-        Cart::where('user_id', auth()->id())->delete();
+        Cart::where('user_id', auth()->id())
+            ->where('appointment_id', $request->get('appointment_id', null))
+            ->delete();
         return successResponse([
             'message' => 'Cart Clear Successfully.'
         ]);
     }
     public function calculateFinancingAmount(FinancingAmountRequest $request)
     {
-        $totalPrice = Cart::where('user_id', auth()->id())->sum('price');
+        $totalPrice = Cart::where('user_id', auth()->id())
+        ->where('appointment_id', $request->get('appointment_id', null))
+        ->sum('price');
         if ($totalPrice == 0) {
             return errorResponse('Cart is empty or contains no priced items.', 400);
         }

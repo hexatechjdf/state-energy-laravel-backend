@@ -30,7 +30,7 @@ class CategorySeeder extends Seeder
                         'name'  => 'category'
                     ],
                     [
-                        'label' => 'Square Footage',
+                        'label' => 'Roof Size',
                         'type'  => 'number',
                         'unit'  => 'sq',
                         'name'  => 'square_footage'
@@ -67,7 +67,7 @@ class CategorySeeder extends Seeder
                         'name'  => 'number_of_panels'
                     ],
                     [
-                        'label' => 'Size of Panel',
+                        'label' => 'Panel Output',
                         'type'  => 'number',
                         'unit'  => 'w',
                         'name'  => 'panel_size',
@@ -82,6 +82,7 @@ class CategorySeeder extends Seeder
                         'type'    => 'select',
                         'options' => ['5.8 kilowatt', '7.6 kilowatt'],
                         'name'    => 'battery',
+                        'allow_multiple' => true,
                         'pricing' => 'true', // enable pricing input for this select field
                     ],
                 ]

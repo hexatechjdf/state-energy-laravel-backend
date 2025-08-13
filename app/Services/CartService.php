@@ -56,9 +56,23 @@ class CartService
 
             case 'Solar':
                 $baseUnitPrice = $pricingRules['price_per_watt'];
-                $basePrice += $baseUnitPrice * (($configValues['number_of_panels'] * $configValues['panel_size']));
-                if (isset($configValues['battery']) && $configValues['battery']) {
-                    $basePrice += $pricingRules['battery'][$configValues['battery']];
+                if (!empty($configValues['number_of_panels']) && !empty($configValues['panel_size'])) {
+                    $basePrice += $baseUnitPrice * (
+                        $configValues['number_of_panels'] * $configValues['panel_size']
+                    );
+                }
+                if (!empty($configValues['battery'])) {
+                    if (is_array($configValues['battery'])) {
+                        foreach ($configValues['battery'] as $batteryType) {
+                            if (isset($pricingRules['battery'][$batteryType])) {
+                                $basePrice += $pricingRules['battery'][$batteryType];
+                            }
+                        }
+                    } else {
+                        if (isset($pricingRules['battery'][$configValues['battery']])) {
+                            $basePrice += $pricingRules['battery'][$configValues['battery']];
+                        }
+                    }
                 }
                 break;
 
@@ -70,17 +84,15 @@ class CartService
 
             case 'Windows':
                 $baseUnitPrice = $pricingRules['price_per_sqft'];
-                foreach($configValues['windows'] as $index => $window)
-                {
+                foreach ($configValues['windows'] as $index => $window) {
                     $area = ($window['height'] * $window['width']) / 144;
                     $basePrice += $area * $pricingRules['price_per_sqft'] * $window['qty'];
                 }
                 break;
 
             case 'Doors':
-                
-                foreach($configValues['doors'] as $index => $door)
-                {
+
+                foreach ($configValues['doors'] as $index => $door) {
                     $doorType = $door['type'];
                     $area = ($door['height'] * $door['width']) / 144;
                     $price = $pricingRules[$doorType]['price'];
@@ -109,13 +121,14 @@ class CartService
                 $basePrice += $configValues['total_price'];
                 break;
         }
-       
+
         foreach ($adders as $adder) {
             $type = isset($adder['type']) ? $adder['type'] : 'linear';
+            $qty  = isset($adder['qty']) && $adder['qty'] > 0 ? $adder['qty'] : 1;
             if ($type == 'linear') {
-                $basePrice += $adder['price'];
+                $basePrice += $adder['price'] * $qty;
             } else {
-                $basePrice += $adder['price']*$baseUnitPrice;
+                $basePrice += $adder['price'] * $baseUnitPrice * $qty;
             }
         }
         return $basePrice;

@@ -12,7 +12,8 @@ class Cart extends Model
         'adders',
         'price',
         'configuration_meta',
-        'pricing_meta'
+        'pricing_meta',
+        'appointment_id'
     ];
 
     protected $casts = [
