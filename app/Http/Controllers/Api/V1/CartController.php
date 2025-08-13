@@ -43,7 +43,7 @@ class CartController extends Controller
             'pricing_meta'  => $category->pricing,
             'adders'        => $request['adders'] ?? [],
             'price'         => $price,
-            'appointment_id' => $request->get('appointment_id', null),
+            'appointment_id' => request('appointment_id', null),
         ])->load(['category']);
         return successResponse([
             'cart'  => new CartResource($cartItem),
@@ -55,7 +55,7 @@ class CartController extends Controller
     {
         $cartItems = Cart::with('category')
             ->where('user_id', auth()->id())
-            ->where('appointment_id', $request->get('appointment_id', null))
+            ->where('appointment_id', request('appointment_id', null))
             ->get();
         return successResponse([
             'cart'  => CartResource::collection($cartItems),
@@ -66,7 +66,7 @@ class CartController extends Controller
     public function update(CartUpdateRequest $request, $id)
     {
         $cartItem = Cart::where('user_id', auth()->id())
-        ->where('appointment_id', $request->get('appointment_id', null))
+        ->where('appointment_id', request('appointment_id', null))
         ->findOrFail($id);
 
 
@@ -97,7 +97,7 @@ class CartController extends Controller
     public function destroy(Request $request, $id)
     {
         $cartItem = Cart::where('user_id', auth()->id())
-        ->where('appointment_id', $request->get('appointment_id', null))
+        ->where('appointment_id', request('appointment_id', null))
         ->findOrFail($id);
         $cartItem->delete();
         return successResponse([
@@ -109,7 +109,7 @@ class CartController extends Controller
     public function clear(Request $request)
     {
         Cart::where('user_id', auth()->id())
-            ->where('appointment_id', $request->get('appointment_id', null))
+            ->where('appointment_id', request('appointment_id', null))
             ->delete();
         return successResponse([
             'message' => 'Cart Clear Successfully.'
@@ -118,7 +118,7 @@ class CartController extends Controller
     public function calculateFinancingAmount(FinancingAmountRequest $request)
     {
         $totalPrice = Cart::where('user_id', auth()->id())
-        ->where('appointment_id', $request->get('appointment_id', null))
+        ->where('appointment_id', request('appointment_id', null))
         ->sum('price');
         if ($totalPrice == 0) {
             return errorResponse('Cart is empty or contains no priced items.', 400);

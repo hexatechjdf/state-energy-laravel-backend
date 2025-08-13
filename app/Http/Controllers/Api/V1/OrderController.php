@@ -20,7 +20,7 @@ class OrderController extends Controller
     {
 
         $user = auth()->user();
-        $cartItems = Cart::where('user_id', $user->id)->where('appointment_id', $request->get('appointment_id', null))->get();
+        $cartItems = Cart::where('user_id', $user->id)->where('appointment_id', request('appointment_id', null))->get();
 
         if ($cartItems->isEmpty()) {
             return errorResponse('Cart is empty');
@@ -65,7 +65,7 @@ class OrderController extends Controller
         }
 
         // Clear user's cart
-        Cart::where('user_id', $user->id)->where('appointment_id', $request->get('appointment_id', null))->delete();
+        Cart::where('user_id', $user->id)->where('appointment_id', request('appointment_id', null))->delete();
         dispatch(new SendOrderToWebhook($order));
         dispatch(new UpdateContactInCRM($order));
         return successResponse([
