@@ -63,9 +63,15 @@ class CartService
                 }
                 if (!empty($configValues['battery'])) {
                     if (is_array($configValues['battery'])) {
-                        foreach ($configValues['battery'] as $batteryType) {
-                            if (isset($pricingRules['battery']['name'])) {
-                                $basePrice += $pricingRules['battery']['quantity'] * $pricingRules['battery']['name'];
+                        foreach ($configValues['battery'] as $battery) {
+
+                            if (isset($battery['name'], $battery['quantity'])) {
+                                $batteryName = $battery['name'];
+                                $quantity    = (int) $battery['quantity'];
+
+                                if (isset($pricingRules['battery'][$batteryName])) {
+                                    $basePrice += $pricingRules['battery'][$batteryName] * $quantity;
+                                }
                             }
                         }
                     } else {
