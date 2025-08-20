@@ -64,8 +64,8 @@ class CartService
                 if (!empty($configValues['battery'])) {
                     if (is_array($configValues['battery'])) {
                         foreach ($configValues['battery'] as $batteryType) {
-                            if (isset($pricingRules['battery'][$batteryType])) {
-                                $basePrice += $pricingRules['battery'][$batteryType];
+                            if (isset($pricingRules['battery']['name'])) {
+                                $basePrice += $pricingRules['battery']['quantity'] * $pricingRules['battery']['name'];
                             }
                         }
                     } else {
