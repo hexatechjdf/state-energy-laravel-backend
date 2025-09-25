@@ -52,7 +52,7 @@ class CategorySeeder extends Seeder
             'thumbnail'      => 'category/solar-thumb.png',
             'detail_photo'   => 'category/solar-detail.png',
             'pricing' => json_encode([
-                'price_per_watt' => '5.50 ',
+                'price_per_watt' => '4.00 ',
                 'battery' => [
                     '5.8 kilowatt' => '4500.00',
                     '7.6 kilowatt' => '5500.00',

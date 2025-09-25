@@ -106,7 +106,7 @@ class CategoryController extends Controller
         ]);
 
         $category = Category::findOrFail($request->category_id);
-
+        $newPrice = $request->cat_base_price;
         // Update image fields
         if ($request->hasFile('thumbnail')) {
             if ($category->thumbnail) {
@@ -167,7 +167,7 @@ class CategoryController extends Controller
                                     ];
                                 }
                                 if ($category->name == 'Solar') {
-                                    $newPricing['price_per_watt'] = $categoryOriginalPricing->price_per_watt;
+                                    $newPricing['price_per_watt'] = $newPrice;
                                     $newPricing['battery'][$option] = $fieldPricing[$option] ?? null;
                                 }
                                 if ($category->name == 'HVAC' || $category->name == 'Insulation') {
@@ -193,6 +193,7 @@ class CategoryController extends Controller
             }
         }
         if($category->name == 'Windows'){
+             $categoryOriginalPricing->price_per_sqft = $newPrice;
             $newPricing  = $categoryOriginalPricing;
         }
         // Handle Adders

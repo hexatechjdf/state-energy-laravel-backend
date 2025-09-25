@@ -47,6 +47,7 @@ class CartService
         $pricingRules = json_decode($category->pricing, true);
         $basePrice = 0;
         $baseUnitPrice = 0;
+        $totalSizeWatts = 0;
         switch ($category->name) {
             case 'Roof':
                 $type = $configValues['category'];
@@ -57,9 +58,8 @@ class CartService
             case 'Solar':
                 $baseUnitPrice = $pricingRules['price_per_watt'];
                 if (!empty($configValues['number_of_panels']) && !empty($configValues['panel_size'])) {
-                    $basePrice += $baseUnitPrice * (
-                        $configValues['number_of_panels'] * $configValues['panel_size']
-                    );
+                    $totalSizeWatts = $configValues['number_of_panels'] * $configValues['panel_size'];
+                    $basePrice += $baseUnitPrice * $totalSizeWatts;
                 }
                 if (!empty($configValues['battery'])) {
                     if (is_array($configValues['battery'])) {
@@ -131,6 +131,15 @@ class CartService
         foreach ($adders as $adder) {
             $type = isset($adder['type']) ? $adder['type'] : 'linear';
             $qty  = isset($adder['qty']) && $adder['qty'] > 0 ? $adder['qty'] : 1;
+            if ($category->name == 'Solar') {
+                if ($type == 'linear') {
+                    $basePrice += $adder['price'] * $qty;
+                } else {
+                    if ($totalSizeWatts > 0) {
+                        $basePrice += $totalSizeWatts * ($adder['price'] * $qty);
+                    }
+                }
+            }
             if ($type == 'linear') {
                 $basePrice += $adder['price'] * $qty;
             } else {
