@@ -11,6 +11,18 @@
     </a>
 </li>
 <li  class="nav-item dropdown">
+    <a href="{{ route('admin.disposition.index') }}" class="nav-link arrow-none">
+        <i class="bx bx-grid-alt"></i>
+        <span key="t-starter-page">@lang('translation.Disposition')</span>
+    </a>
+</li>
+<li  class="nav-item dropdown">
+    <a href="{{ route('admin.lender.index') }}" class="nav-link arrow-none">
+        <i class="bx bx-grid-alt"></i>
+        <span key="t-starter-page">@lang('translation.Lender')</span>
+    </a>
+</li>
+<li  class="nav-item dropdown">
     <a href="{{ route('admin.setting') }}" class="nav-link arrow-none">
         <i class="bx bx-wrench"></i>
         <span key="t-starter-page">@lang('translation.Setting')</span>

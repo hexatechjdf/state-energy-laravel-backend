@@ -1,5 +1,6 @@
 <script>
     let configFields = [];
+    let category = null;
     let editAddersSelect = $('#edit_adders_wrapper');
 
     // Thumbnail & Detail Photo Previews
@@ -106,7 +107,7 @@
         return html;
     }
 
-    function getPriceValue(option, pricing) {
+    function getMaxPriceValue(option, pricing) {
         if (!pricing) return '';
         if (pricing[option]) return pricing[option].price_per_sqft ?? pricing[option].price ?? '';
         if (pricing.battery && pricing.battery[option]) return pricing.battery[option];
@@ -125,23 +126,125 @@
         return '';
     }
 
-    function optionRow(index, value = '', price = null, subCat = null, withPricing = false) {
-        const uniqueRowId = Date.now() + Math.floor(Math.random() * 1000);
-        const pricingField = withPricing ?
-            `<input type="number" class="form-control pricing-input" step="0.01" data-index="${index}" data-subcat="${subCat ?? ''}" data-old-name="__option__" value="${price ?? ''}" placeholder="Price">` :
-            '';
-        return `<div class="input-group mb-1 option-row">
-    <input type="text" class="form-control ${withPricing ? '' : 'parent-option-input'}" data-row-id="${uniqueRowId}" data-index="${index}" name="config_fields[${index}][options]${subCat ? `[${subCat}]` : ''}[]" value="${value}" placeholder="Option Label">
-    ${pricingField}
-    <button type="button" class="btn btn-primary btn-sm btn-remove-option">X</button>
-  </div>`;
+    function getPriceValue(option, pricing) {
+        if (!pricing) return '';
+        if (pricing[option]) return pricing[option].price_per_sqft ?? pricing[option].price ?? '';
+        if (pricing.battery && pricing.battery[option]) return pricing.battery[option];
+        for (const key in pricing) {
+            const p = pricing[key];
+            if (p.capacity) {
+              
+                const match = p.capacity.find(cap => cap.label === option);
+                if (match) return match.price;
+            }
+            if (p['R-Value']) {
+                const match = p['R-Value'].find(val => val.label === option);
+                if (match) return match.price;
+            }
+        }
+        return '';
     }
+
+    function getMinPriceValue(option, pricing) {
+        if (!pricing) return '';
+        if (pricing[option]) return pricing[option].min_price_per_sqft ?? pricing[option].min_price ?? '';
+
+        for (const key in pricing) {
+            const p = pricing[key];
+            if (p.capacity) {
+                const match = p.capacity.find(cap => cap.label === option);
+                if (match) return match.min_price;
+            }
+            if (p['R-Value']) {
+                const match = p['R-Value'].find(val => val.label === option);
+                if (match) return match.min_price;
+            }
+        }
+        return '';
+    }
+
+    function getMaxPriceValue(option, pricing) {
+        if (!pricing) return '';
+        if (pricing[option]) return pricing[option].max_price_per_sqft ?? pricing[option].max_price ?? '';
+        for (const key in pricing) {
+            const p = pricing[key];
+            if (p.capacity) {
+                const match = p.capacity.find(cap => cap.label === option);
+                if (match) return match.max_price;
+            }
+            if (p['R-Value']) {
+                const match = p['R-Value'].find(val => val.label === option);
+                if (match) return match.max_price;
+            }
+        }
+        return '';
+    }
+
+    function optionRow(index, value = '', price = null, subCat = null, withPricing = false, minPrice = null, maxPrice =
+        null) {
+            
+        const uniqueRowId = Date.now() + Math.floor(Math.random() * 1000);
+        let minMaxFields = '';
+        if (withPricing && category.name !== 'Solar') {
+            minMaxFields = `
+            <div class="col-md-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Min</span>
+                    </div>
+                    <input type="number" class="form-control min-pricing-input" step="0.01" 
+                           data-index="${index}" data-subcat="min${subCat ?? ''}" 
+                           value="${minPrice ?? ''}" placeholder="Min Price">
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Max</span>
+                    </div>
+                    <input type="number" class="form-control max-pricing-input" step="0.01" 
+                           data-index="${index}" data-subcat="max${subCat ?? ''}" 
+                           value="${maxPrice ?? ''}" placeholder="Max Price">
+                </div>
+            </div>`;
+        }
+
+        const pricingField = withPricing ? `
+    
+     <div class="col-md-3">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">MSRP</span>
+                </div>
+                 <input type="number" class="form-control pricing-input" step="0.01" 
+               data-index="${index}" data-subcat="${subCat ?? ''}" 
+               data-old-name="__option__" value="${price ?? ''}" 
+               placeholder="Price">
+            </div>
+        </div>
+
+       ${minMaxFields}` : '';
+
+        return `
+    <div class="input-group mb-1 option-row">
+        <input type="text" class="form-control ${withPricing ? '' : 'parent-option-input'}" 
+               data-row-id="${uniqueRowId}" data-index="${index}" 
+               name="config_fields[${index}][options]${subCat ? `[${subCat}]` : ''}[]" 
+               value="${value}" placeholder="Option Label">
+        ${pricingField}
+        <button type="button" class="btn btn-primary btn-sm btn-remove-option">X</button>
+    </div>`;
+    }
+
 
     function renderOptionsWithPricing(options = [], index, pricing = {}) {
         let html = `<label>Options & Pricing</label><div class="options-wrapper" id="options_wrapper_${index}">`;
         options.forEach(option => {
             const priceValue = getPriceValue(option, pricing);
-            html += optionRow(index, option, priceValue, null, true);
+            const minPriceValue = getMinPriceValue(option, pricing);
+            const maxPriceValue = getMaxPriceValue(option, pricing);
+            html += optionRow(index, option, priceValue, null, true, minPriceValue, maxPriceValue);
         });
         html +=
             `</div><button type="button" class="btn btn-primary btn-sm mt-2 btn-add-option" data-index="${index}" data-pricing="true">Add Option</button>`;
@@ -153,6 +256,8 @@
         const index = optionInput.data('index');
         const optionRow = optionInput.closest('.option-row');
         const pricingInput = optionRow.find('.pricing-input');
+        const minpricingInput = optionRow.find('.min-pricing-input');
+        const maxpricingInput = optionRow.find('.max-pricing-input');
         const subCat = pricingInput.data('subcat');
 
         if (pricingInput.length) {
@@ -161,7 +266,11 @@
             } else {
                 pricingInput.prop('disabled', false);
                 const nameAttr = `config_fields[${index}][pricing]${subCat ? `[${subCat}]` : ''}[${label}]`;
+                const minNameAttr = `config_fields[${index}][min_pricing]${subCat ? `[${subCat}]` : ''}[${label}]`;
+                const maxNameAttr = `config_fields[${index}][max_pricing]${subCat ? `[${subCat}]` : ''}[${label}]`;
                 pricingInput.attr('name', nameAttr);
+                minpricingInput.attr('name', minNameAttr);
+                maxpricingInput.attr('name', maxNameAttr);
             }
         }
     }
@@ -180,9 +289,11 @@
                 `<div class="alert alert-warning p-2">No options found for ${subCategory}. Please add at least one option.</div>`;
         }
         subCatOptions.forEach(option => {
-            const priceValue = pricing[subCategory]?.[option] ?? '';
+            const priceValue = pricing[subCategory]?.[option] ?? pricing[subCategory]?.[option].msrp ?? '';
+            const minPriceValue = pricing[subCategory]?.[option].min_price ?? '';
+            const maxPriceValue = pricing[subCategory]?.[option].max_price ?? '';
             const hasPrice = !!priceValue;
-            html += optionRow(index, option, priceValue, subCategory, hasPrice);
+            html += optionRow(index, option, priceValue, subCategory, hasPrice, minPriceValue, maxPriceValue);
         });
         html +=
             `</div><button type="button" class="btn btn-primary btn-sm mt-2 btn-add-dynamic-option" data-pricing="${withPricing}" data-index="${index}" data-subcategory="${subCategory}">Add Option</button>`;
@@ -217,9 +328,6 @@
         const label = $(this).val().trim();
         const index = $(this).data('index');
         const rowId = $(this).data('row-id');
-        console.log(index);
-        console.log(rowId);
-        console.log(label);
         if (!label) return;
 
         const parentField = configFields.fields[index];
@@ -228,9 +336,6 @@
         configFields.fields.forEach((f, depIndex) => {
             if (f.type === 'dynamic_select' && f.depends_on === parentField.name) {
                 const sectionId = `dynamic_section_${depIndex}_${rowId}`;
-                console.log(depIndex);
-                console.log(sectionId);
-                // If section exists → update title
                 if ($(`#${sectionId}`).length) {
                     $(`#${sectionId} h6`).text(label);
                     return;
@@ -259,7 +364,7 @@
             type: 'GET',
             success: res => {
                 $('#loader').hide();
-                const category = res.category;
+                category = res.category;
                 $('#edit-category-form')[0].reset();
                 $('#edit_category_id').val(category.id);
                 $('#edit_name').val(category.name);
@@ -271,17 +376,18 @@
                     .max_qty));
                 configFields = JSON.parse(category.configuration);
                 const pricing = JSON.parse(category.pricing);
+                $('#cat-price-label').text('MSRP');
                 if (category.name === 'Windows') {
-                    $('#cat-price-label').text('Windows Price Per Sq Ft');
                     $('#cat-base-price').val(pricing.price_per_sqft || 0.00);
-                    $('#cat-price-wrapper').removeClass('d-none'); 
-                }
-                else if (category.name === 'Solar') {
-                    $('#cat-price-label').text('Price Per Watt');
+                    $('#cat-min-price').val(pricing.min_price_per_sqft || 0.00);
+                    $('#cat-max-price').val(pricing.max_price_per_sqft || 0.00);
+                    $('#cat-price-wrapper').removeClass('d-none');
+                } else if (category.name === 'Solar') {
                     $('#cat-base-price').val(pricing.price_per_watt || 0.00);
-                    $('#cat-price-wrapper').removeClass('d-none'); 
-                }
-                else {
+                    $('#cat-min-price').val(pricing.min_price_per_watt || 0.00);
+                    $('#cat-max-price').val(pricing.max_price_per_watt || 0.00);
+                    $('#cat-price-wrapper').removeClass('d-none');
+                } else {
                     $('#cat-price-wrapper').addClass('d-none');
                 }
                 $('#configuration_fields_container').empty();

@@ -104,9 +104,10 @@ class CategoryController extends Controller
             'thumbnail'     => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'detail_photo'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
         ]);
-
         $category = Category::findOrFail($request->category_id);
         $newPrice = $request->cat_base_price;
+        $minNewPrice = $request->cat_min_price;
+        $maxNewPrice = $request->cat_max_price;
         // Update image fields
         if ($request->hasFile('thumbnail')) {
             if ($category->thumbnail) {
@@ -144,15 +145,24 @@ class CategoryController extends Controller
             if (in_array($field['type'], ['select', 'dynamic_select'])) {
                 $fieldOptions = $request->input("config_fields.$index.options");
                 $fieldPricing = $request->input("config_fields.$index.pricing");
+                $minFieldPricing = $request->input("config_fields.$index.min_pricing");
+                $maxFieldPricing = $request->input("config_fields.$index.max_pricing");
 
                 if ($fieldOptions) {
-                   
                     if (is_array($fieldOptions) && array_keys($fieldOptions) !== range(0, count($fieldOptions) - 1)) {
                         // dynamic_select with subcategories
                         foreach ($fieldOptions as $subCat => $options) {
                             foreach ($options as $option) {
                                 if (isset($field['pricing']) && $field['pricing'] === 'true') {
-                                    $newPricing[$subCat][$option] = $fieldPricing[$subCat][$option] ?? null;
+                                    if ($category->name == 'Insulation' || $category->name == 'HVAC') {
+                                        $newPricing[$subCat][$option] = [
+                                            'msrp' => $fieldPricing[$subCat][$option] ?? null,
+                                            'min_price' => $minFieldPricing[$subCat][$option] ?? null,
+                                            'max_price' => $maxFieldPricing[$subCat][$option] ?? null,
+                                        ];
+                                    } else {
+                                        $newPricing[$subCat][$option] = $fieldPricing[$subCat][$option] ?? null;
+                                    }
                                 }
                             }
                         }
@@ -163,23 +173,37 @@ class CategoryController extends Controller
                             if (isset($field['pricing']) && $field['pricing'] === 'true') {
                                 if ($category->name == 'Roof') {
                                     $newPricing[$option] = [
-                                        'price_per_sqft' => $fieldPricing[$option] ?? null
+                                        'price_per_sqft' => $fieldPricing[$option] ?? null,
+                                        'min_price_per_sqft' => $minFieldPricing[$option] ?? null,
+                                        'max_price_per_sqft' => $maxFieldPricing[$option] ?? null,
                                     ];
                                 }
                                 if ($category->name == 'Solar') {
                                     $newPricing['price_per_watt'] = $newPrice;
+                                    $newPricing['min_price_per_watt'] = $minNewPrice;
+                                    $newPricing['max_price_per_watt'] = $maxNewPrice;
                                     $newPricing['battery'][$option] = $fieldPricing[$option] ?? null;
                                 }
-                                if ($category->name == 'HVAC' || $category->name == 'Insulation') {
-                                    $newPricing[$option] = $fieldPricing[$option] ?? null;
+                                if ($category->name == 'HVAC') {
+                                    $newPricing[$option] = [
+                                        'msrp' => $fieldPricing[$option] ?? null,
+                                        'min_price' => $minFieldPricing[$option] ?? null,
+                                        'max_price' => $maxFieldPricing[$option] ?? null
+                                    ];
                                 }
                                 if ($category->name == 'Doors') {
-                                     $newPricing[$option] = [
-                                        'price' => $fieldPricing[$option] ?? null
+                                    $newPricing[$option] = [
+                                        'price' => $fieldPricing[$option] ?? null,
+                                        'min_price' => $minFieldPricing[$option] ?? null,
+                                        'max_price' => $maxFieldPricing[$option] ?? null
                                     ];
                                 }
                                 if ($category->name == 'Insulation') {
-                                      $newPricing[$option] = $fieldPricing[$option] ?? null;
+                                    $newPricing[$option] = [
+                                        'msrp' => $fieldPricing[$option] ?? null,
+                                        'min_price' => $minFieldPricing[$option] ?? null,
+                                        'max_price' => $maxFieldPricing[$option] ?? null
+                                    ];
                                 }
                             }
                         }
@@ -192,10 +216,13 @@ class CategoryController extends Controller
                 $updatedFields[] = $field;
             }
         }
-        if($category->name == 'Windows'){
-             $categoryOriginalPricing->price_per_sqft = $newPrice;
+        if ($category->name == 'Windows') {
+            $categoryOriginalPricing->price_per_sqft = $newPrice;
+            $categoryOriginalPricing->min_price_per_sqft = $minNewPrice;
+            $categoryOriginalPricing->max_price_per_sqft = $maxNewPrice;
             $newPricing  = $categoryOriginalPricing;
         }
+
         // Handle Adders
         $adderNames  = $request->input('adders_names', []);
         $adderPrices = $request->input('adders_prices', []);

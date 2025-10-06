@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DispositionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LenderController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,11 +29,26 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
     Route::group(['as' => 'category.', 'prefix' => 'category', 'middleware' => ['auth']], function () {
         Route::get('/index', [CategoryController::class, 'index'])->name('index');
         Route::post('/get-table-data', [CategoryController::class, 'getTableData'])->name('table-data');
-
         Route::get('/{id}', [CategoryController::class, 'show']);
         Route::post('/update', [CategoryController::class, 'update'])->name('update');
-
-
     });
+
+    Route::group(['as' => 'disposition.', 'prefix' => 'disposition', 'middleware' => ['auth']], function () {
+        Route::get('/index', [DispositionController::class, 'index'])->name('index');
+        Route::post('/store', [DispositionController::class, 'store'])->name('store');
+        Route::post('/get-table-data', [DispositionController::class, 'getTableData'])->name('table-data');
+        Route::post('/update', [DispositionController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [DispositionController::class, 'destroy'])->name('users.delete');
+    
+    });
+    Route::group(['as' => 'lender.', 'prefix' => 'lender', 'middleware' => ['auth']], function () {
+        Route::get('/index', [LenderController::class, 'index'])->name('index');
+        Route::post('/store', [LenderController::class, 'store'])->name('store');
+        Route::post('/get-table-data', [LenderController::class, 'getTableData'])->name('table-data');
+        Route::post('/update', [LenderController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [LenderController::class, 'destroy'])->name('delete');
+    
+    });
+
 
 });

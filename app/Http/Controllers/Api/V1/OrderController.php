@@ -14,25 +14,16 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-
-    // Add to Order
     public function store(OrderStoreRequest $request)
     {
-
-        $user = auth()->user();
+        $user = loginUser();
         $cartItems = Cart::where('user_id', $user->id)->where('appointment_id', request('appointment_id', null))->get();
-
         if ($cartItems->isEmpty()) {
             return errorResponse('Cart is empty');
         }
-
-        // Calculate total cart amount
         $totalAmount = $cartItems->sum('price');
-
-        // Calculate order amount (total - loan_financed_amount)
         $loanFinanced = $request->loan_financed_amount ?? 0;
         $orderAmount = $totalAmount - $loanFinanced;
-        // Create order
         $order = Order::create([
             'user_id'                 => $user->id,
             'first_name'              => $request->first_name,
@@ -44,6 +35,8 @@ class OrderController extends Controller
             'city'                    => $request->city,
             'monthly_utility_bill'    => $request->monthly_utility_bill,
             'monthly_insurance_bill'  => $request->monthly_insurance_bill,
+            'monthly_water_swerage_bill'  => $request->monthly_water_swerage_bill,
+            'monthly_gas_bill'  => $request->monthly_gas_bill,
             'loan_financed_amount'    => $loanFinanced,
             'finance_provider'        => $request->finance_provider,
             'total_amount'            => $totalAmount,
@@ -52,7 +45,6 @@ class OrderController extends Controller
             'contact_id'              => $request->contact_id ?? null,
     ]);
 
-        // Move cart items to order items
         foreach ($cartItems as $item) {
             OrderItem::create([
                 'order_id'      => $order->id,
@@ -64,7 +56,6 @@ class OrderController extends Controller
             ]);
         }
 
-        // Clear user's cart
         Cart::where('user_id', $user->id)->where('appointment_id', request('appointment_id', null))->delete();
         dispatch(new SendOrderToWebhook($order));
         dispatch(new UpdateContactInCRM($order));

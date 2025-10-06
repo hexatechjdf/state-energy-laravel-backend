@@ -17,13 +17,16 @@ class Order extends Model
         'city',
         'monthly_utility_bill',
         'monthly_insurance_bill',
+        'monthly_water_swerage_bill',
+        'monthly_gas_bill',
         'loan_financed_amount',
         'finance_provider',
         'total_amount',
         'status',
         "order_amount",
         "appointment_id",
-        "contact_id"
+        "contact_id",
+        "contact_ids",
     ];
     public function orderItems()
     {

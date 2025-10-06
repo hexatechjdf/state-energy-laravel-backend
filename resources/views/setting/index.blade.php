@@ -27,7 +27,7 @@
     @endcomponent
 
     <div class="row">
-        <div class="col-xl-12">
+        <div class="col-xl-6 col-md-6 col-sm-6">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Webhook URL Setting for Order Payload</h4>
@@ -59,7 +59,7 @@
                 </div>
             </div>
         </div> <!-- end col -->
- <div class="col-xl-12">
+        <div class="col-xl-6 col-sm-6 col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Webhook URL Disposition Payload</h4>
@@ -70,7 +70,8 @@
                                 <div class="mb-3">
                                     <label for="disposition_webhook_url" class="form-label">
                                         Webhook URL
-                                        <small class="text-muted d-block">This is the endpoint where disposition payload will be
+                                        <small class="text-muted d-block">This is the endpoint where disposition payload
+                                            will be
                                             sent.</small>
                                     </label>
                                     <input type="url" class="form-control" id="disposition_webhook_url"
@@ -92,7 +93,7 @@
             </div>
         </div> <!-- end col -->
 
-        <div class="col-xl-12">
+        <div class="col-xl-6 col-md-6 col-sm-6">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Template Setting for Proposal Sending</h4>
@@ -141,7 +142,10 @@
                             class="fw-bold fs-5">Settings </code>(bottom of the
                         sidebar), and select <code class="fw-bold fs-5"> Private Integration Token .</code> Click <code
                             class="fw-bold fs-5">Create New Integration, </code>enter a name and
-                        description, then proceed. On the next page, set the scopes to <code class="fw-bold fs-5">Edit Conversation Messages View Calendars Edit Calendars View Calendar Events Edit Calendar Events View Users Edit Conversations View Contacts View Email Templates Edit Contacts.</code> Save the token, copy it, and paste it
+                        description, then proceed. On the next page, set the scopes to <code class="fw-bold fs-5">Edit
+                            Conversation Messages View Calendars Edit Calendars View Calendar Events Edit Calendar Events
+                            View Users Edit Conversations View Contacts View Email Templates Edit Contacts.</code> Save the
+                        token, copy it, and paste it
                         here along with the <code class="fw-bold fs-5"> Location ID </code>used to
                         generate it.</p>
                     <form class="needs-validation" novalidate id="onboarding-form">
@@ -247,7 +251,8 @@
 
     <script>
         $(document).ready(function() {
-            $('#onboarding-form,#template-selection-form,#webhook-setting-form,#disposition-setting-form').on('submit',
+            $('#onboarding-form,#template-selection-form,#webhook-setting-form,#disposition-setting-form').on(
+                'submit',
                 function(e) {
                     e.preventDefault();
                     var $form = $(this);
