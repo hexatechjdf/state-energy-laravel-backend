@@ -28,11 +28,12 @@ class CartController extends Controller
     {
 
         $category = Category::findOrFail($request['category_id']);
-
+        $upsellPrice = $request->price_meta->user_set_price ?? 0;
         $price = $this->cartService->calculatePrice(
             $category,
             $request->configuration,
-            $request->adders ?? []
+            $request->adders ?? [],
+            $upsellPrice
         );
 
         $cartItem = Cart::create([
@@ -78,7 +79,8 @@ class CartController extends Controller
         $price = $this->cartService->calculatePrice(
             $category,
             $newConfig,
-            $newAdders
+            $newAdders,
+            $upsellPrice = $request->price_meta->user_set_price ?? 0
         );
 
         $cartItem->update([

@@ -42,7 +42,7 @@ class CartService
 
         return $basePrice;
     }
-    public function calculatePrice(Category $category, array $configValues, array $adders = [])
+    public function calculatePrice(Category $category, array $configValues, array $adders = [], $upsellPrice = 0)
     {
         $pricingRules = json_decode($category->pricing, true);
         $basePrice = 0;
@@ -51,12 +51,12 @@ class CartService
         switch ($category->name) {
             case 'Roof':
                 $type = $configValues['category'];
-                $rate = $pricingRules[$type]['price_per_sqft'];
+                $rate = ($upsellPrice > 0) ? $upsellPrice : $pricingRules[$type]['price_per_sqft'];
                 $basePrice += $rate * $configValues['square_footage'];
                 break;
 
             case 'Solar':
-                $baseUnitPrice = $pricingRules['price_per_watt'];
+                $baseUnitPrice = ($upsellPrice > 0) ? $upsellPrice : $pricingRules['price_per_watt'];
                 if (!empty($configValues['number_of_panels']) && !empty($configValues['panel_size'])) {
                     $totalSizeWatts = $configValues['number_of_panels'] * $configValues['panel_size'];
                     $basePrice += $baseUnitPrice * $totalSizeWatts;
@@ -83,16 +83,24 @@ class CartService
                 break;
 
             case 'HVAC':
+                if ($upsellPrice > 0) {
+                    $basePrice = $upsellPrice;
+                }
                 $type = $configValues['sub_category'];
                 $capacity = $configValues['capacity'];
-                $basePrice = $pricingRules[$type][$capacity];
+                $priceData = $pricingRules[$type][$capacity];
+                if (is_array($priceData) && isset($priceData['msrp'])) {
+                    $basePrice = (float) $priceData['msrp'];
+                } else {
+                    $basePrice = (float) $priceData;
+                }
                 break;
 
             case 'Windows':
-                $baseUnitPrice = $pricingRules['price_per_sqft'];
+                $baseUnitPrice = ($upsellPrice > 0) ? $upsellPrice : $pricingRules['price_per_sqft'];
                 foreach ($configValues['windows'] as $index => $window) {
                     $area = ($window['height'] * $window['width']) / 144;
-                    $basePrice += $area * $pricingRules['price_per_sqft'] * $window['qty'];
+                    $basePrice += $area * $baseUnitPrice * $window['qty'];
                 }
                 break;
 
@@ -101,14 +109,16 @@ class CartService
                 foreach ($configValues['doors'] as $index => $door) {
                     $doorType = $door['type'];
                     $area = ($door['height'] * $door['width']) / 144;
-                    $price = $pricingRules[$doorType]['price'];
+                    $price = ($upsellPrice > 0) ? $upsellPrice : $pricingRules[$doorType]['price'];
                     $baseUnitPrice = $price;
                     $basePrice += $area * $price * $door['qty'];
                 }
                 break;
 
             case 'Water Heater':
-                $basePrice += $pricingRules['price_per_gallon'] * $configValues['capacity'];
+                $ratePerGallon = ($upsellPrice > 0) ? $upsellPrice : $pricingRules['price_per_gallon'];
+                $baseUnitPrice = $ratePerGallon;
+                $basePrice += $ratePerGallon * $configValues['capacity'];
                 if (!empty($configValues['include_installation'])) {
                     $basePrice += $pricingRules['installation_fee'];
                 }
@@ -120,11 +130,18 @@ class CartService
             case 'Insulation':
                 $type = $configValues['sub_category'];
                 $rValue = $configValues['r_value'];
-                $basePrice = $pricingRules[$type][$rValue] * $configValues['square_footage'];
+                $priceData =  $pricingRules[$type][$rValue];
+                if (is_array($priceData) && isset($priceData['msrp'])) {
+                    $baseUnitPrice = (float) $priceData['msrp'];
+                } else {
+                    $baseUnitPrice = (float) $priceData;
+                }
+                $rate = ($upsellPrice > 0) ? $upsellPrice : $baseUnitPrice;
+                $basePrice = $rate * $configValues['square_footage'];
                 break;
 
             case 'Other':
-                $basePrice += $configValues['total_price'];
+                $basePrice = ($upsellPrice > 0) ? $upsellPrice : $configValues['total_price'];
                 break;
         }
 
