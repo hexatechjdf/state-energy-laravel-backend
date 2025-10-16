@@ -93,4 +93,20 @@ class OrderController extends Controller
             'message' => 'Order created successfully',
         ]);
     }
+    public function getOrderByAppointment($appointmentId)
+    {
+        $order = Order::where('user_id', loginUser()->id)
+            ->where('appointment_id', $appointmentId)
+            ->with('orderItems')
+            ->first();
+        // send success response with empty array of data if no order found
+        if (!$order) {
+            return successResponse([
+                'order' => [],
+            ]);
+        }
+        return successResponse([
+            'order'  => new OrderResource($order),
+        ]);
+    }
 }
