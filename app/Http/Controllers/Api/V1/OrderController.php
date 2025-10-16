@@ -98,15 +98,15 @@ class OrderController extends Controller
         $order = Order::where('user_id', loginUser()->id)
             ->where('appointment_id', $appointmentId)
             ->with('orderItems')
-            ->first();
+            ->get();
         // send success response with empty array of data if no order found
-        if (!$order) {
+        if ($order->isEmpty()) {
             return successResponse([
                 'order' => [],
             ]);
         }
         return successResponse([
-            'order'  => new OrderResource($order),
+            'order'  => OrderResource::collection($order),
         ]);
     }
 }
