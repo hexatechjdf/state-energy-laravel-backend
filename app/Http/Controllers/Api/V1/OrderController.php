@@ -66,7 +66,7 @@ class OrderController extends Controller
     }
     public function index()
     {
-        $orders = Order::where('user_id', Auth::id())->with('orderItems')->get();
+        $orders = Order::where('user_id', loginUser()->id)->with('orderItems')->get();
         return successResponse([
             'order'  => OrderResource::collection($orders),
         ]);
@@ -74,9 +74,9 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with('orderItems')->where('user_id', Auth::id())->findOrFail($id);
+        $order = Order::with('orderItems')->where('user_id', loginUser()->id)->findOrFail($id);
         return successResponse([
-            'message' => 'Order created successfully',
+            'message' => 'Order retrieved successfully',
             'order'  => new OrderResource($order),
         ]);
     }
@@ -97,6 +97,7 @@ class OrderController extends Controller
     {
         $order = Order::where('user_id', loginUser()->id)
             ->where('appointment_id', $appointmentId)
+            ->where('status', '!=', 'canceled')
             ->with('orderItems')
             ->get();
         // send success response with empty array of data if no order found

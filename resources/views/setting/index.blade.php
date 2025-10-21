@@ -187,6 +187,14 @@
                             <button class="btn btn-primary" type="submit">Save</button>
                         </div>
                     </form>
+                    <div class="row mt-3">
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <button id="connect-location-btn" class="btn btn-primary w-100" style="display:none;"
+                                data-base-url="{{ route('oauthcrmconnection') }}/location/">
+                                Connect to Location
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div> <!-- end col -->
@@ -350,6 +358,39 @@
             // Optional: Clear name if user clears selection
             $('#proposal_template_id').on('select2:clear', function(e) {
                 $('#proposal_template_name').val('');
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            const $locationInput = $('#location_id');
+            const $connectBtn = $('#connect-location-btn');
+            const baseUrl = $connectBtn.data('base-url');
+
+            function toggleConnectButton() {
+                const locationId = $locationInput.val().trim();
+
+                if (locationId !== '') {
+                    $connectBtn.show();
+                    $connectBtn.attr('data-href', baseUrl + locationId);
+                } else {
+                    $connectBtn.hide();
+                    $connectBtn.attr('data-href', '');
+                }
+            }
+
+            // Trigger on load (if location_id already filled)
+            toggleConnectButton();
+
+            // Trigger on input change
+            $locationInput.on('input', toggleConnectButton);
+
+            // Redirect when clicking the button
+            $connectBtn.on('click', function() {
+                const href = $(this).attr('data-href');
+                if (href) {
+                    window.location.href = href;
+                }
             });
         });
     </script>

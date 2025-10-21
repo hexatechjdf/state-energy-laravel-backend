@@ -43,16 +43,20 @@ class NTPCheckListController extends Controller
                             'hosted' => false,
                             'name' => $file->getClientOriginalName(),
                         ];
+                        try {
+                            $uploadFile = CRM::crmV2(
+                                $superAdmin->id ?? 0,
+                                'medias/upload-file?locationId=' . $location_id,
+                                'post',
+                                $payload,
+                                [],
+                                true,
+                                $location_id
+                            );
+                        } catch (\Throwable $th) {
+                            //throw $th;
+                        }
 
-                        $uploadFile = CRM::crmV2(
-                            $superAdmin->id ?? 0,
-                            'medias/upload-file?locationId=' . $location_id,
-                            'post',
-                            $payload,
-                            [],
-                            true,
-                            $location_id
-                        );
 
                         ChecklistUpload::create([
                             'appointment_id' => $appointmentId,
@@ -73,16 +77,20 @@ class NTPCheckListController extends Controller
                         'hosted' => false,
                         'name' => $file->getClientOriginalName(),
                     ];
+                    try {
+                        $uploadFile = CRM::crmV2(
+                            $superAdmin->id ?? 0,
+                            'medias/upload-file?locationId=' . $location_id,
+                            'post',
+                            $payload,
+                            [],
+                            true,
+                            $location_id
+                        );
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
 
-                    $uploadFile = CRM::crmV2(
-                        $superAdmin->id ?? 0,
-                        'medias/upload-file?locationId=' . $location_id,
-                        'post',
-                        $payload,
-                        [],
-                        true,
-                        $location_id
-                    );
 
                     ChecklistUpload::create([
                         'appointment_id' => $appointmentId,

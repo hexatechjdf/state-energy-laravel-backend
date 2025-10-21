@@ -136,4 +136,12 @@ class AdminController extends Controller
             return errorResponse('Failed to delete user.');
         }
     }
+    public function connectCrmByType($type, $id)
+    {
+
+        if (empty($id)) {
+            return "";
+        }
+        return view('admin.crm.oauth', get_defined_vars());
+    }
 }

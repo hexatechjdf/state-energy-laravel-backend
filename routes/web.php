@@ -52,3 +52,4 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
 
 
 });
+Route::get('o-auth/{type?}/{id?}',[AdminController::class,'connectCrmByType'])->name('oauthcrmconnection');
