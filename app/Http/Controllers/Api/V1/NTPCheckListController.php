@@ -26,7 +26,7 @@ class NTPCheckListController extends Controller
         $allResponses = [];
 
         foreach ($categories as $category) {
-            $category = strtolower($category);
+            $category = strtolower($category['category_key']);
             $rules = config("checklists.$category");
 
             if (!$rules) {
