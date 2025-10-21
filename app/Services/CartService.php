@@ -50,9 +50,11 @@ class CartService
         $totalSizeWatts = 0;
         switch ($category->name) {
             case 'Roof':
+
                 $type = $configValues['category'];
                 $rate = ($upsellPrice > 0) ? $upsellPrice : $pricingRules[$type]['price_per_sqft'];
                 $basePrice += $rate * $configValues['square_footage'];
+                $basePrice = ($upsellPrice > 0) ? $upsellPrice : $basePrice;
                 break;
 
             case 'Solar':
