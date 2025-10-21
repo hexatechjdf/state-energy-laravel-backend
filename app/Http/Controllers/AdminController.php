@@ -6,11 +6,13 @@ use App\Helpers\CRM;
 use App\Http\Requests\Api\V1\UserStoreRequest;
 use App\Http\Resources\UserResource;
 use App\Jobs\SendGhlWelcomeEmail;
+use App\Models\CrmToken;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
 
 class AdminController extends Controller
 {
@@ -143,5 +145,115 @@ class AdminController extends Controller
             return "";
         }
         return view('admin.crm.oauth', get_defined_vars());
+    }
+    public function oAuthCallback(Request $request, $provider)
+    {
+        if ($provider !== 'crm') {
+            abort(404, 'Provider not found.');
+        }
+
+        // 1. Validate the incoming request from the CRM
+        $authorizationCode = $request->input('code');
+        if (empty($authorizationCode)) {
+            // This error is for the final fetch call from our JavaScript
+            if ($request->has('onlyjson')) {
+                return response()->json(['error' => 'Authorization code is missing.'], 400);
+            }
+            // This is for a user being redirected directly without a code
+            return $this->handleError('Authorization code is required to connect.');
+        }
+
+        try {
+            // 2. Exchange the authorization code for an access token
+            $tokenResponse = $this->exchangeCodeForToken($authorizationCode);
+
+            // 3. Securely store the token
+            $this->storeCrmToken($tokenResponse);
+
+            // 4. Return the appropriate response
+            if ($request->has('onlyjson')) {
+                // This is the response for the JavaScript fetch() call
+                return response('Connected successfully', 200)
+                    ->header('Content-Type', 'text/plain');
+            }
+
+            // If the user is redirected here directly, show a success view
+            return view('install_completed');
+        } catch (\Exception $e) {
+            // Log the detailed error for debugging
+            \Log::error('CRM OAuth Callback Failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Return a generic error to the user/API call
+            if ($request->has('onlyjson')) {
+                return response()->json(['error' => 'An internal error occurred during authentication.'], 500);
+            }
+            return $this->handleError('An internal error occurred. Please try again later.');
+        }
+    }
+
+    /**
+     * Exchanges the authorization code for an access token.
+     *
+     * @param string $code
+     * @return object
+     * @throws \Exception
+     */
+    private function exchangeCodeForToken(string $code): object
+    {
+        $response = Http::asForm()->post('https://services.leadconnectorhq.com/oauth/token', [
+            'client_id'     => env('CRM_CLIENT_ID'),
+            'client_secret' => env('CRM_CLIENT_SECRET'),
+            'grant_type'    => 'authorization_code',
+            'code'          => $code,
+            'redirect_uri'  => env('CRM_OAUTH_CALLBACK_URL_LOCATION'), // Ensure this matches your provider settings
+        ]);
+
+        if ($response->failed()) {
+            // Throw an exception if the token exchange fails
+            throw new \Exception('Failed to obtain access token from provider. Status: ' . $response->status());
+        }
+
+        $tokenData = $response->object();
+
+        if (isset($tokenData->error)) {
+            throw new \Exception('Token provider returned an error: ' . ($tokenData->error_description ?? 'Unknown error'));
+        }
+
+        return $tokenData;
+    }
+
+    /**
+     * Creates or updates the CRM token in the database.
+     *
+     * @param object $tokenData The response object from the token exchange.
+     * @return void
+     */
+    private function storeCrmToken(object $tokenData): void
+    {
+        // Use updateOrCreate to either create a new record or update an existing one for the location.
+        CrmToken::updateOrCreate(
+            ['location_id' => $tokenData->locationId], // Match by location_id
+            [
+                'access_token'  => $tokenData->access_token,
+                'refresh_token' => $tokenData->refresh_token,
+                'expires_in'    => $tokenData->expires_in,
+                'scope'         => $tokenData->scope,
+                'user_type'     => $tokenData->userType,
+                'company_id'    => $tokenData->companyId ?? null,
+            ]
+        );
+    }
+
+    /**
+     * A simple helper to show an error view.
+     *
+     * @param string $message
+     * @return \Illuminate\View\View
+     */
+    private function handleError(string $message)
+    {
+        return view('crm_error', ['message' => $message]);
     }
 }

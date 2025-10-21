@@ -188,13 +188,39 @@
                         </div>
                     </form>
                     <div class="row mt-3">
-                        <div class="col-lg-6 col-md-6 col-sm-6">
-                            <button id="connect-location-btn" class="btn btn-primary w-100" style="display:none;"
-                                data-base-url="{{ route('oauthcrmconnection') }}/location/">
-                                Connect to Location
-                            </button>
+                        <div class="col-lg-12">
+
+                           
+                            @if ($crmToken && $crmToken->access_token)
+                                {{-- STATE: Already Connected --}}
+                                <div class="alert alert-success">
+                                    <h5 class="alert-heading">CRM Connected!</h5>
+                                    <p>Your account is successfully connected to the CRM.</p>
+                                    <hr>
+                                    <p class="mb-0">
+                                        <strong>Connected Location ID:</strong> {{ $crmToken->location_id }}
+                                    </p>
+                                </div>
+
+                                {{-- This button will link to a route to handle the disconnection. --}}
+                                <a href="{{ route('oauth.disconnect', ['provider' => 'crm', 'locationId' => $crmToken->location_id]) }}"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Are you sure you want to disconnect? This will stop all data synchronization.')">
+                                    Disconnect CRM
+                                </a>
+                            @else
+                                {{-- STATE: Not Connected --}}
+                                {{-- This button links to the OAuth connection flow we built earlier. --}}
+                                <a href="{{ route('oauthcrmconnection') }}/location/{{ $$crmToken->location_id ?? 'JoqQ51Bl3LEmR42l6LrG' }}"
+                                    class="btn btn-primary">
+                                    Connect to CRM
+                                </a>
+                                <p class="text-muted mt-2">Connect your CRM account to enable data synchronization.</p>
+                            @endif
+
                         </div>
                     </div>
+
                 </div>
             </div>
         </div> <!-- end col -->

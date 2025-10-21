@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\CRM;
+use App\Models\CrmToken;
 use App\Models\Setting;
 use App\Models\User;
 use Exception;
@@ -21,7 +22,15 @@ class SettingController extends Controller
     {
         $user = loginUser();
         $settings = Setting::where('user_id', $user->id)->pluck('value', 'key')->toArray();
-        return view('setting.index', compact('settings', 'user'));
+        $userLocationId = $settings['location_id'] ?? null;
+        $crmToken = null;
+
+        // Only try to find a token if a location ID actually exists.
+        if ($userLocationId) {
+            $crmToken = CrmToken::where('location_id', $userLocationId)->first();
+        }
+
+        return view('setting.index', compact('settings', 'user', 'crmToken'));
     }
 
     /**
@@ -194,5 +203,30 @@ class SettingController extends Controller
             'per_page'      => $perPage,
             'current_page'  => $page
         ]);
+    }
+    public function disconnect(Request $request, string $provider, string $locationId)
+    {
+        if ($provider !== 'crm') {
+            abort(404, 'Provider not supported.');
+        }
+
+        try {
+            $crmToken = CrmToken::where('location_id', $locationId)->first();
+
+            if ($crmToken) {
+                $crmToken->delete();
+
+                return redirect()->route('admin.settings') // Use the name of your settings page route
+                    ->with('success', 'CRM has been successfully disconnected.');
+            } else {
+                return redirect()->route('admin.settings')
+                    ->with('info', 'CRM was already disconnected.');
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to disconnect CRM for location {$locationId}: " . $e->getMessage());
+
+            return redirect()->route('admin.setting')
+                ->with('error', 'An error occurred while trying to disconnect the CRM. Please try again.');
+        }
     }
 }

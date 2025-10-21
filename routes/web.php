@@ -53,3 +53,9 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
 
 });
 Route::get('o-auth/{type?}/{id?}',[AdminController::class,'connectCrmByType'])->name('oauthcrmconnection');
+Route::prefix('authorization')->name('crm.')->group(function () {
+  Route::get('/{type}/oauth/callback', [AdminController::class, 'oAuthCallback'])->name('oauth_callback');
+});
+
+Route::get('/oauth/disconnect/{provider}/{locationId}', [SettingController::class, 'disconnect'])
+    ->name('oauth.disconnect'); // Protect this route
