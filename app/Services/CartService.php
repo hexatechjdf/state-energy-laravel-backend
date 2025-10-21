@@ -83,9 +83,7 @@ class CartService
                 break;
 
             case 'HVAC':
-                if ($upsellPrice > 0) {
-                    $basePrice = $upsellPrice;
-                }
+
                 $type = $configValues['sub_category'];
                 $capacity = $configValues['capacity'];
                 $priceData = $pricingRules[$type][$capacity];
@@ -93,6 +91,9 @@ class CartService
                     $basePrice = (float) $priceData['msrp'];
                 } else {
                     $basePrice = (float) $priceData;
+                }
+                if ($upsellPrice > 0) {
+                    $basePrice = $upsellPrice;
                 }
                 break;
 

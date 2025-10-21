@@ -28,7 +28,7 @@ class CartController extends Controller
     {
 
         $category = Category::findOrFail($request['category_id']);
-        $upsellPrice = $request->price_meta->user_set_price ?? 0;
+        $upsellPrice = $request->price_meta['user_set_price'] ?? 0;
         $price = $this->cartService->calculatePrice(
             $category,
             $request->configuration,

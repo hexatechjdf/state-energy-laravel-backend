@@ -8,7 +8,7 @@ use App\Http\Resources\LenderResource;
 use App\Models\ChecklistUpload;
 use App\Models\Lender;
 use App\Models\User;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class NTPCheckListController extends Controller
 {
@@ -18,10 +18,10 @@ class NTPCheckListController extends Controller
         $superAdmin  = User::where('role_id', User::ROLE_ADMIN)->first();
         $location_id = getSettingValue($superAdmin->id, 'location_id', '');
 
-        $appointmentId = $request->input('appointment_id');
-        $orderId       = $request->input('order_id');
+        $appointmentId = $request->appointment_id;
+        $orderId       = $request->order_id;
 
-        $categories = (array) $request->input('categories');
+        $categories = (array) $request->categories;
 
         $allResponses = [];
 
