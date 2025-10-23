@@ -160,7 +160,7 @@ class CartService
                     }
                 }
             }
-            if ($type == 'linear') {
+            else if ($type == 'linear') {
                 $basePrice += $adder['price'] * $qty;
             } else {
                 $basePrice += $adder['price'] * $baseUnitPrice * $qty;
