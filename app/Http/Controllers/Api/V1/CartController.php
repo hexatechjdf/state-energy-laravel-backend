@@ -80,7 +80,7 @@ class CartController extends Controller
             $category,
             $newConfig,
             $newAdders,
-            $upsellPrice = $request->price_meta->user_set_price ?? 0
+            $request->price_meta['user_set_price'] ?? 0
         );
 
         $cartItem->update([
