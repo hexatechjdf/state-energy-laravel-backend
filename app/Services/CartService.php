@@ -55,6 +55,7 @@ class CartService
                 $rate = ($upsellPrice > 0) ? $upsellPrice : $pricingRules[$type]['price_per_sqft'];
                 $basePrice += $rate * $configValues['square_footage'];
                 $basePrice = ($upsellPrice > 0) ? $upsellPrice : $basePrice;
+                $baseUnitPrice = $basePrice;
                 break;
 
             case 'Solar':
@@ -97,6 +98,7 @@ class CartService
                 if ($upsellPrice > 0) {
                     $basePrice = $upsellPrice;
                 }
+                $baseUnitPrice = $basePrice;
                 break;
 
             case 'Windows':
@@ -145,6 +147,7 @@ class CartService
 
             case 'Other':
                 $basePrice = ($upsellPrice > 0) ? $upsellPrice : $configValues['total_price'];
+                $baseUnitPrice = $basePrice;
                 break;
         }
 
