@@ -163,7 +163,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row d-none">
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="private_integration_token" class="form-label">
@@ -190,7 +190,6 @@
                     <div class="row mt-3">
                         <div class="col-lg-12">
 
-                           
                             @if ($crmToken && $crmToken->access_token)
                                 {{-- STATE: Already Connected --}}
                                 <div class="alert alert-success">
@@ -211,10 +210,10 @@
                             @else
                                 {{-- STATE: Not Connected --}}
                                 {{-- This button links to the OAuth connection flow we built earlier. --}}
-                                <a href="{{ route('oauthcrmconnection') }}/location/{{ $$crmToken->location_id ?? 'JoqQ51Bl3LEmR42l6LrG' }}"
-                                    class="btn btn-primary">
-                                    Connect to CRM
-                                </a>
+                                <button type="button" class="btn btn-primary" id="connect-location-btn"
+                                    data-base-url="{{ route('oauthcrmconnection') }}/location/">
+                                    Connect to CRM Location
+                                </button>
                                 <p class="text-muted mt-2">Connect your CRM account to enable data synchronization.</p>
                             @endif
 

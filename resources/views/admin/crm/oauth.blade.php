@@ -172,8 +172,8 @@
                 'Company': '{{ env('CRM_OAUTH_CALLBACK_URL_COMPANY', 'http://127.0.0.1:8000/authorization/crm/oauth/callback') }}'
             };
             const crmScopes = {
-                'Location': 'users.readonly contacts.readonly contacts.write calendars/events.readonly calendars/events.write conversations.readonly conversations.write conversations/message.write conversations/message.readonly locations/customFields.readonly',
-                'Company': 'users.readonly contacts.readonly contacts.write calendars/events.readonly calendars/events.write conversations.readonly conversations.write conversations.write conversations/message.write conversations/messages.readonly locations/customFields.readonly'
+                'Location': 'users.readonly contacts.readonly contacts.write calendars/events.readonly calendars/events.write conversations.readonly conversations.write conversations/message.write conversations/message.readonly locations/customFields.readonly medias.write medias.readonly',
+                'Company': 'users.readonly contacts.readonly contacts.write calendars/events.readonly calendars/events.write conversations.readonly conversations.write conversations.write conversations/message.write conversations/messages.readonly locations/customFields.readonly medias.write medias.readonly'
             };
 
             // --- Helper Functions ---

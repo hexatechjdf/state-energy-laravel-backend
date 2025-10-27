@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Models\CrmAuths;
+use App\Models\CrmToken;
 use stdClass;
 use \App\Models\Product;
 use App\Models\User;
@@ -13,12 +13,12 @@ class CRM
 
     protected static $base_url = 'https://services.leadconnectorhq.com/';
     protected static $version = '2021-07-28';
-    protected static $crm = CrmAuths::class;
+    protected static $crm = CrmToken::class;
     public static $lang_com = 'Company';
     public static $lang_loc = 'Location';
 
     protected static $userType = ['Company' => 'company_id', 'Location' => 'location_id'];
-    public static $scopes = "contacts.write conversations.readonly conversations/message.readonly contacts.readonly companies.readonly oauth.write oauth.readonly locations.write locations.readonly users.readonly opportunities.write";
+    public static $scopes = "users.readonly contacts.write contacts.readonly calendars/events.readonly calendars/events.write conversations.readonly conversations.write conversations/message.write conversations/message.readonly locations/customFields.readonly medias.write medias.readonly";
     protected static $no_token = 'No Token';
     protected static $no_record = 'No Data';
 
@@ -92,23 +92,31 @@ class CRM
             }
             $headers = $headers1;
         }
-        $jsonheader = 'content-type: application/json';
-        if (!empty($data)) {
-            if ((is_array($data) || is_object($data))) {
-                if ($json) {
-                    $data = json_encode($data);
-                } else {
-                    $data = json_decode(json_encode($data), true);
-                    $data = http_build_query($data);
+        $isFileUpload = false;
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                if ($value instanceof \CURLFile) {
+                    $isFileUpload = true;
+                    break;
                 }
             }
-            if ($json) {
-                $headers[] = $jsonheader;
-            }
-            if ($methodl != 'get') {
-                curl_setopt_array($curl, [CURLOPT_POSTFIELDS => $data]);
+        }
+        if (!empty($data)) {
+            if ($isFileUpload) {
+                // Multipart upload → don't JSON encode, don't set content-type manually
+                $json = false;
+            } elseif ($json) {
+                $data = json_encode($data);
+                $headers[] = 'Content-Type: application/json';
             } else {
-                $url = static::urlFix($url) . $data;
+                $data = http_build_query($data);
+                $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+            }
+
+            if ($methodl !== 'get') {
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            } else {
+                $url = static::urlFix($url) . (is_string($data) ? $data : '');
             }
         }
 
@@ -303,7 +311,7 @@ class CRM
     }
     public static function getLocationToken($company_id, $location = '')
     {
-        $data = ['user_id' => $company_id, 'user_type' => self::$lang_loc];
+        $data = ['user_type' => self::$lang_loc];
         if ($location != '') {
             $data['location_id'] = $location;
         }
@@ -348,6 +356,8 @@ class CRM
         if (!$company_id) {
             return self::$no_record;
         }
+
+        // ---- Token Handling ----
         if (config('app.crm_connection_type') == 'oauth') {
             if (!$location) {
                 $location = self::getLocationToken($company_id, $location_id);
@@ -359,19 +369,25 @@ class CRM
         } else {
             $access_token = getSettingValue($company_id, 'private_integration_token', '');
         }
-        $main_url = static::$base_url;
-        $headers['Version'] = static::$version;
+
         if (!$access_token) {
             return self::$no_token;
         }
+
+        $main_url = static::$base_url;
+        $headers['Version'] = static::$version;
+        $headers['Authorization'] = 'Bearer ' . $access_token;
         $location_id = $location->location_id ?? '';
         $company_id = $location->company_id ?? '';
         $methodl = strtolower($method);
-        if ((strpos($url, 'templates') !== false || strpos($url, 'tags') !== false || strpos($url, 'custom') !== false || strpos($url, 'tasks/search') !== false) && strpos($url, 'locations/') === false) {
+
+        // ---- URL Handling (same as your version) ----
+        if ((strpos($url, 'templates') !== false || strpos($url, 'tags') !== false || strpos($url, 'custom') !== false || strpos($url, 'tasks/search') !== false)
+            && strpos($url, 'locations/') === false
+        ) {
             if (strpos($url, 'custom-fields') !== false) {
                 $url = str_replace('-fields', 'Fields', $url);
             }
-
             if (strpos($url, 'custom-values') !== false) {
                 $url = str_replace('-values', 'Values', $url);
             }
@@ -409,6 +425,54 @@ class CRM
                 }
             }
         }
+
+        // ---- File Upload Detection ----
+        $isFileUpload = false;
+        if (is_array($data)) {
+            foreach ($data as $value) {
+                if ($value instanceof \CURLFile) {
+                    $isFileUpload = true;
+                    break;
+                }
+            }
+        }
+
+        // ---- Handle data encoding ----
+        if (!empty($data)) {
+            // Remove unwanted fields
+            if (is_object($data)) {
+                $data = (array) $data;
+            }
+
+            if (isset($data['company_id'])) unset($data['company_id']);
+            if (isset($data['customField'])) {
+                $data['customFields'] = $data['customField'];
+                unset($data['customField']);
+            }
+
+            // Add locationId for POST
+            if ($methodl === 'post') {
+                $uri = ['businesses', 'calendars', 'contacts', 'conversations', 'links', 'opportunities', 'contacts/bulk/business'];
+                $matching = str_replace('/', '', $urlmain);
+                foreach ($uri as $k) {
+                    if ($matching === $k && !isset($data['locationId'])) {
+                        $data['locationId'] = $location_id;
+                    }
+                }
+            }
+
+            // For PUT (contacts), remove some fields
+            if ($methodl === 'put' && strpos($url, 'contacts') !== false) {
+                unset($data['locationId'], $data['gender']);
+            }
+
+            // File uploads → skip JSON encoding
+            if ($isFileUpload) {
+                $json = false;
+            }
+        }
+
+        // ---- Final URL ----
         $lastsl = '/';
         $sep = '?';
         $slash = explode($sep, $url);
@@ -428,60 +492,16 @@ class CRM
                 }
             }
         }
-        $headers['Authorization'] = 'Bearer ' . $access_token;
-        if ($json) {
-            // $headers['Content-Type'] = "application/json";
-        }
+
         $url1 = $main_url . $url;
-        // $usertype = $location->user_type;
-        $dat = '';
-        if (!empty($data)) {
-            if (!is_string($data)) {
-                $dat = json_encode($data);
-            } else {
-                $dat = $data;
-            }
-            try {
-                $dat = json_decode($dat) ?? null;
-            } catch (\Exception $e) {
-                $dat = (object) $data;
-            }
-            if (property_exists($dat, 'company_id')) {
-                unset($dat->company_id);
-            }
-            if (property_exists($dat, 'customField')) {
-                $dat->customFields = $dat->customField;
-                unset($dat->customField);
-            }
 
-            if ($methodl == 'post') {
-                $uri = ['businesses', 'calendars', 'contacts', 'conversations', 'links', 'opportunities', 'contacts/bulk/business'];
-                $matching = str_replace('/', '', $urlmain);
-                foreach ($uri as $k) {
-                    if ($matching == $k) {
-                        if (!property_exists($dat, 'locationId')) {
-                            $dat->locationId = $location_id;
-                        }
-                    }
-                }
-            }
-            if ($methodl == 'put' && strpos($url, 'contacts') !== false) {
-                if (property_exists($dat, 'locationId')) {
-                    unset($dat->locationId);
-                }
-                if (property_exists($dat, 'gender')) {
-                    unset($dat->gender);
-                }
-            }
-        }
+        // ---- Actual Request ----
+        $response = self::makeCall($url1, $method, $data, $headers, $json);
+        $bd = json_decode($response);
 
-        if (strpos($url1, 'status') !== false) {
-        }
-        // dd($url1, $method, $dat, $headers, $json);
-        $cd = self::makeCall($url1, $method, $dat, $headers, $json);
-        $bd = json_decode($cd);
+        // ---- Token refresh logic ----
         if (self::isExpired($bd) && $retries == 0) {
-            list($is_refresh, $location1) = self::getRefreshToken($company_id, $location, false);
+            [$is_refresh, $location1] = self::getRefreshToken($company_id, $location, false);
             if (!$is_refresh && $location) {
                 $cmpid = $location->user_id ?? $company_id;
                 $getAgency = static::getAgencyToken($cmpid);
@@ -496,14 +516,11 @@ class CRM
             if ($is_refresh) {
                 return self::crmV2($company_id, $url, $method, $data, $headers, $json, $location_id, $location1, $retries + 1);
             }
-
-            // if (self::ConnectOauth($company)) {
-            //     return self::crmV2($company_id, $urlmain, $method, $data, $headers, $json,$location_id,null,$retries+1);
-            // }
-
         }
+
         return $bd;
     }
+
 
     public static function crm_token($code = '', $method = '')
     {

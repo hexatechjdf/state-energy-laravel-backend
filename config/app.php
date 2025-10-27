@@ -14,7 +14,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-
+    'crm_connection_type' => env('CRM_CONNECTION_TYPE', 'oauth'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
