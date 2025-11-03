@@ -136,8 +136,8 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">CRM Setup</h4>
-                    <code class="fw-bold fs-5">Private Integration Token</code>
-                    <p class="card-title-desc">
+                    {{-- <code class="fw-bold fs-5">Private Integration Token</code> --}}
+                    {{-- <p class="card-title-desc d-none">
                         To generate a Private Integration Token, go to the sub-account, navigate to <code
                             class="fw-bold fs-5">Settings </code>(bottom of the
                         sidebar), and select <code class="fw-bold fs-5"> Private Integration Token .</code> Click <code
@@ -147,7 +147,7 @@
                             View Users Edit Conversations View Contacts View Email Templates Edit Contacts.</code> Save the
                         token, copy it, and paste it
                         here along with the <code class="fw-bold fs-5"> Location ID </code>used to
-                        generate it.</p>
+                        generate it.</p> --}}
                     <form class="needs-validation" novalidate id="onboarding-form">
                         @csrf
                         <div class="row">
