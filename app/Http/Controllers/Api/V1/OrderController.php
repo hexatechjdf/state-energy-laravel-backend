@@ -101,7 +101,7 @@ class OrderController extends Controller
             ->with('orderItems')
             ->latest()
             ->first();
-        if ($order->isEmpty()) {
+        if (!$order) {
             return successResponse([
                 'order' => null,
             ]);
