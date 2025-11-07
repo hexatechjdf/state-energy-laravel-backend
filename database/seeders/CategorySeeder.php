@@ -133,7 +133,7 @@ class CategorySeeder extends Seeder
                             'Mini Split' => ['1 TON', '1.5 TON', '2 TON', '2.5 TON']
                         ],
                         'pricing'       => 'true',
-                        "depends_on"=> "sub_category",
+                        "depends_on" => "sub_category",
                     ]
                 ]
             ])
@@ -177,8 +177,9 @@ class CategorySeeder extends Seeder
                     ],
                     [
                         'label' => 'Tint Color',
-                        'type'  => 'string',
-                        'name'  => 'tint_color'
+                        'type'  => 'select',
+                        'name'  => 'tint_color',
+                        'options' => ['White', 'Brown', 'Red'],
                     ],
                     [
                         'label' => 'Quantity',
@@ -235,8 +236,9 @@ class CategorySeeder extends Seeder
                     ],
                     [
                         'label' => 'Tint Color',
-                        'type'  => 'string',
-                        'name'  => 'tint_color'
+                        'type'  => 'select',
+                        'name'  => 'tint_color',
+                        'options' => ['White', 'Brown', 'Red'],
                     ],
                     [
                         'label' => 'Quantity',
@@ -253,34 +255,39 @@ class CategorySeeder extends Seeder
             'thumbnail'      => 'category/water-heater-thumb.png',
             'detail_photo'   => 'category/water-heater-detail.png',
             'pricing'        => json_encode([
-                'price_per_gallon'  => '12.00',    // hypothetical per gallon rate
-                'installation_fee'  => '200.00',
-                'tankless_addon'    => '500.00'
+                'price_per_gallon'  => '12.00',
+                'tankless_addon'    => '500.00',
+                '18 kW' => [
+                    'msrp'       => '3150.00',
+                    'min'       => '3150.00',
+                    'max' => '3150.00'
+                ],
+                '24 kW' => [
+                    'msrp'       => '5490.00',
+                    'min'       => '3150.00',
+                    'max' => '3150.00'
+                ],
             ]),
             'configuration'  => json_encode([
                 'fields' => [
                     [
                         'label' => 'Type',
                         'type'  => 'select',
-                        'options' => ['Tank', 'Tankless'],
+                        'options' => ['Tank'],
                         'name'  => 'type'
                     ],
                     [
                         'label' => 'Capacity',
-                        'type'  => 'number',
+                        'type'  => 'select',
                         'unit'  => 'gallons',
-                        'name'  => 'capacity'
+                        'name'  => 'capacity',
+                        'options' => ['18 kW', '24 kW'],
                     ],
                     [
                         'label' => 'Energy Efficiency Rating',
                         'type'  => 'select',
                         'options' => ['Standard', 'High Efficiency'],
                         'name'  => 'efficiency_rating'
-                    ],
-                    [
-                        'label' => 'Include Installation',
-                        'type'  => 'boolean',
-                        'name'  => 'include_installation'
                     ],
                 ]
             ])
@@ -318,7 +325,7 @@ class CategorySeeder extends Seeder
                             'Blown-in Insulation' => ['R-30', 'R-38'],
                             'Batt Insulation'     => ['R-30', 'R-35']
                         ],
-                        "depends_on"=> "sub_category",
+                        "depends_on" => "sub_category",
                         'pricing'        => 'true'
                     ],
                     [

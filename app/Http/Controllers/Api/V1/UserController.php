@@ -185,4 +185,8 @@ class UserController extends Controller
         Http::post($disposition_webhook_url, $payload);
         return successResponse(['message' => 'Disposition sent successfully.']);
     }
+    public function sendUserInfoWebhook(Request $request)
+    {
+        return successResponse(['message' => 'Webhook sent successfully.']);
+    }
 }

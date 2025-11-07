@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CrmController;
 use App\Http\Controllers\DispositionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LenderController;
@@ -26,6 +27,7 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
     Route::get('index', [AdminController::class, 'index'])->name('user.index');
     Route::post('/get-table-data', [AdminController::class, 'getTableData'])->name('user.table-data');
 
+
     Route::group(['as' => 'category.', 'prefix' => 'category', 'middleware' => ['auth']], function () {
         Route::get('/index', [CategoryController::class, 'index'])->name('index');
         Route::post('/get-table-data', [CategoryController::class, 'getTableData'])->name('table-data');
@@ -39,7 +41,6 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
         Route::post('/get-table-data', [DispositionController::class, 'getTableData'])->name('table-data');
         Route::post('/update', [DispositionController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [DispositionController::class, 'destroy'])->name('users.delete');
-    
     });
     Route::group(['as' => 'lender.', 'prefix' => 'lender', 'middleware' => ['auth']], function () {
         Route::get('/index', [LenderController::class, 'index'])->name('index');
@@ -47,15 +48,14 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
         Route::post('/get-table-data', [LenderController::class, 'getTableData'])->name('table-data');
         Route::post('/update', [LenderController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [LenderController::class, 'destroy'])->name('delete');
-    
     });
-
-
 });
-Route::get('o-auth/{type?}/{id?}',[AdminController::class,'connectCrmByType'])->name('oauthcrmconnection');
+Route::get('o-auth/{type?}/{id?}', [AdminController::class, 'connectCrmByType'])->name('oauthcrmconnection');
 Route::prefix('authorization')->name('crm.')->group(function () {
-  Route::get('/{type}/oauth/callback', [AdminController::class, 'oAuthCallback'])->name('oauth_callback');
+    Route::get('/{type}/oauth/callback', [AdminController::class, 'oAuthCallback'])->name('oauth_callback');
 });
 
 Route::get('/oauth/disconnect/{provider}/{locationId}', [SettingController::class, 'disconnect'])
     ->name('oauth.disconnect'); // Protect this route
+
+Route::get('/refresh-crm-tokens', [CrmController::class, 'refreshCrmTokens']);

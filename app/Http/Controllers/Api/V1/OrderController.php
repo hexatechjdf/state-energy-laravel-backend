@@ -43,7 +43,7 @@ class OrderController extends Controller
             'order_amount'            => $orderAmount ?? 0.00,
             'appointment_id'          => $request->appointment_id ?? null,
             'contact_id'              => $request->contact_id ?? null,
-    ]);
+        ]);
 
         foreach ($cartItems as $item) {
             OrderItem::create([
@@ -99,11 +99,11 @@ class OrderController extends Controller
             ->where('appointment_id', $appointmentId)
             ->where('status', '!=', 'canceled')
             ->with('orderItems')
-            ->get();
-        // send success response with empty array of data if no order found
+            ->latest()
+            ->first();
         if ($order->isEmpty()) {
             return successResponse([
-                'order' => [],
+                'order' => null,
             ]);
         }
         return successResponse([

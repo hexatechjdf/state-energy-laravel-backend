@@ -79,4 +79,8 @@ class User extends Authenticatable
     {
         return $this->settings()->whereIn('key', $keys)->pluck('value', 'key');
     }
+    public function token()
+    {
+        return $this->hasOne(CrmToken::class, 'user_id');
+    }
 }
