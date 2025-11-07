@@ -107,7 +107,7 @@ class OrderController extends Controller
             ]);
         }
         return successResponse([
-            'order'  => OrderResource::collection($order),
+            'order'  => new OrderResource($order),
         ]);
     }
 }
