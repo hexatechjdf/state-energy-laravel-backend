@@ -521,7 +521,7 @@ class CRM
         $data['client_secret'] = env('CRM_CLIENT_SECRET', static::getDefault('crm_client_secret'));
         $data[$md] = $code;
         $data['grant_type'] = empty($method) ? 'authorization_code' : 'refresh_token';
-        $headers = ['content-type: application/x-www-form-urlencoded'];
+        $headers = [];
         return self::makeCall($url, 'POST', $data, $headers, false);
     }
     public static function checkNull($pr)
