@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ProcessRefreshToken;
+use App\Jobs\UpdateRefreshToken;
 use Illuminate\Support\Facades\Log;
 
 class CrmController extends Controller
@@ -11,7 +12,7 @@ class CrmController extends Controller
     public function __construct() {}
     public function refreshCrmTokens()
     {
-        dispatch(new ProcessRefreshToken(1))->onQueue('refresh_token');
+        dispatch(new UpdateRefreshToken())->onQueue('refresh_token');
         Log::info('Token refresh job dispatched (page 1) via URL.');
         return response()->json([
             'status' => 'success',

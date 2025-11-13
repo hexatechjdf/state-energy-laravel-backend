@@ -16,14 +16,13 @@ class UpdateRefreshToken implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $userId;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($userId)
+    public function __construct()
     {
-        $this->userId = $userId;
+       
     }
 
     /**
@@ -32,11 +31,11 @@ class UpdateRefreshToken implements ShouldQueue
     public function handle(): void
     {
         try {
-            $rf = CrmToken::where('user_id', $this->userId)->first();
+            $rf = CrmToken::first();
             if ($rf) {
                 $status = $rf->urefresh();
                 if ($status === 500) {
-                    dispatch((new UpdateRefreshToken($this->userId))->delay(Carbon::now()->addMinutes(5)))->onQueue('refresh_token');
+                    dispatch((new UpdateRefreshToken())->delay(Carbon::now()->addMinutes(5)))->onQueue('refresh_token');
                 }
             }
         } catch (\Throwable $th) {

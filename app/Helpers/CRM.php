@@ -58,20 +58,6 @@ class CRM
         $loc->expires_in = $code->expires_in ?? 0;
         $loc->access_token = $code->access_token;
         $loc->refresh_token = $code->refresh_token;
-        $user = User::where('location_id', $loc->location_id)->first();
-        if (!$user) {
-            $location_id = $code->locationId ?? '';
-            $user = new User();
-            $user->name = 'Location User';
-            //$user->first_name = 'User';
-            //$user->last_name = 'User';
-            $user->email = $location_id . '@presave.net';
-            $user->password = bcrypt('presave_' . $location_id);
-            $user->location_id = $location_id;
-            $user->ghl_api_key = '-';
-            $user->save();
-        }
-        $loc->user_id = $user->id;
         $loc->save();
         if ($already) {
             $loc->refresh();
