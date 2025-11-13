@@ -120,15 +120,20 @@ class CartService
                 break;
 
             case 'Water Heater':
-                $ratePerGallon = ($upsellPrice > 0) ? $upsellPrice : $pricingRules['price_per_gallon'];
+                $type = $configValues['capacity'];
+                if (is_int($type)) {
+                    $type = (string)$type . ' kW';
+                }
+                $ratePerGallon = ($upsellPrice > 0) ? $upsellPrice : $pricingRules[$type]['msrp'];
                 $baseUnitPrice = $ratePerGallon;
-                $basePrice += $ratePerGallon * $configValues['capacity'];
-                if (!empty($configValues['include_installation'])) {
-                    $basePrice += $pricingRules['installation_fee'];
-                }
-                if (!empty($configValues['type']) && $configValues['type'] === 'Tankless') {
-                    $basePrice += $pricingRules['tankless_addon'];
-                }
+                $basePrice = $baseUnitPrice;
+                // $basePrice += $ratePerGallon * $configValues['capacity'];
+                // if (!empty($configValues['include_installation'])) {
+                //     $basePrice += $pricingRules['installation_fee'];
+                // }
+                // if (!empty($configValues['type']) && $configValues['type'] === 'Tankless') {
+                //     $basePrice += $pricingRules['tankless_addon'];
+                // }
                 break;
 
             case 'Insulation':
@@ -161,8 +166,7 @@ class CartService
                         $basePrice += $totalSizeWatts * ($adder['price'] * $qty);
                     }
                 }
-            }
-            else if ($type == 'linear') {
+            } else if ($type == 'linear') {
                 $basePrice += $adder['price'] * $qty;
             } else {
                 $basePrice += $adder['price'] * $baseUnitPrice * $qty;

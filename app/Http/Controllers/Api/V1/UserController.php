@@ -175,7 +175,7 @@ class UserController extends Controller
             'dispo_note'      => $request->disposition_note,
         ];
 
-        if (strtolower($request->disposition) === 'sale' ) {
+        if (strtolower($request->disposition) === 'sale') {
             $order = Order::where('user_id', $user->id)
                 ->where('appointment_id', $request->appointment_id)
                 ->first();
@@ -187,6 +187,20 @@ class UserController extends Controller
     }
     public function sendUserInfoWebhook(Request $request)
     {
-        return successResponse(['message' => 'Webhook sent successfully.']);
+        $user = loginUser();
+
+        $superAdmin = User::where('role_id', User::ROLE_ADMIN)->first();
+
+        if (!$superAdmin) {
+            return errorResponse('Super Admin not found.', 404);
+        }
+
+        $checkin_webhook_url = getSettingValue($superAdmin->id, 'checkin_webhook_url', '');
+
+        if (empty($checkin_webhook_url)) {
+            return errorResponse('Checkin webhook URL not configured.', 400);
+        }
+        Http::post($checkin_webhook_url, $request->all());
+        return successResponse(['message' => 'Checkin sent successfully.']);
     }
 }

@@ -93,6 +93,40 @@
             </div>
         </div> <!-- end col -->
 
+
+        <div class="col-xl-6 col-sm-6 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Webhook URL CheckIn Payload</h4>
+                    <form class="needs-validation" novalidate id="checkin-setting-form" method="POST">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="checkin_webhook_url" class="form-label">
+                                        Webhook URL
+                                        <small class="text-muted d-block">This is the endpoint where disposition payload
+                                            will be
+                                            sent.</small>
+                                    </label>
+                                    <input type="url" class="form-control" id="checkin_webhook_url"
+                                        name="setting[checkin_webhook_url]" placeholder="https://your-webhook-endpoint.com"
+                                        value="{{ $settings['checkin_webhook_url'] ?? '' }}" required>
+                                    <div class="valid-feedback">
+                                        Looks good!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> <!-- end col -->
+
         <div class="col-xl-6 col-md-6 col-sm-6">
             <div class="card">
                 <div class="card-body">
@@ -129,9 +163,172 @@
                 </div>
             </div>
         </div> <!-- end col -->
+        <div class="col-xl-6 col-md-6 col-sm-6">
+            <div class="card">
+                <div class="card-body">
 
+                    <h4 class="card-title">Step 1 – Form URL</h4>
 
+                    <p class="text-muted" style="font-size: 14px;">
+                        Please provide the URL of your Form 1.
+                        After submitting the URL, make sure to <strong>add the script below</strong> inside that form so we
+                        can track completions.
+                    </p>
 
+                    <!-- Form 1 URL Input -->
+                    <form class="needs-validation" novalidate id="step-1-selection-form">
+                        @csrf
+
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <!-- Form URL -->
+                                <div class="mb-3">
+                                    <label for="form_1_url" class="form-label">Form 1 URL</label>
+                                    <input type="url" class="form-control" id="form_1_url"
+                                        name="setting[form_1_url]" placeholder="https://example.com/your-form"   value="{{ $settings['form_1_url'] ?? '' }}"required>
+                                    <div class="invalid-feedback">
+                                        Please enter a valid form URL.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </form>
+
+                    <hr>
+
+                    <!-- Script Instruction -->
+                    <h6 class="mt-3">Required Script</h6>
+                    <p class="text-muted" style="font-size: 13px;">
+                        Please copy and paste the following script inside your Form 1 page:
+                    </p>
+
+                    <pre style="background: #f8f8f8; padding: 10px; border-radius: 5px; font-size: 12px;">
+&lt;script&gt;
+    function waitElement(selector) {
+        return new Promise(function (resolve) {
+            let elm = document.querySelector(selector);
+            if (elm) {
+                resolve(elm);
+                return;
+            }
+            new MutationObserver(function () {
+                elm = document.querySelector(selector);
+                if (elm) {
+                    this.disconnect();
+                    resolve(elm);
+                }
+            }).observe(document, { subtree: true, childList: true });
+        });
+    }
+    waitElement(".thank-you-message").then(() => {
+        const storedData = localStorage.getItem("_ud");
+        let parsedData = null;
+
+        try {
+            parsedData = storedData ? JSON.parse(storedData) : null;
+        } catch (e) {
+            parsedData = storedData;
+        }
+
+        const payload = {
+            event: "form_completed",
+            data: parsedData
+        };
+
+        window.parent.postMessage(payload, "*");
+    });
+&lt;/script&gt;
+            </pre>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-md-6 col-sm-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <h4 class="card-title">Qualification Page  – CRM Form URL</h4>
+
+                    <p class="text-muted" style="font-size: 14px;">
+                        Please provide the URL of your Form 2.
+                        After submitting the URL, make sure to <strong>add the script below</strong> inside that form so we
+                        can track completions.
+                    </p>
+
+                    <!-- Form 2 URL Input -->
+                    <form class="needs-validation" novalidate id="step-2-selection-form">
+                        @csrf
+
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <!-- Form URL -->
+                                <div class="mb-3">
+                                    <label for="form_2_url" class="form-label">Qualification Page  CRM Form URL</label>
+                                    <input type="url" class="form-control" id="form_2_url"
+                                        name="setting[form_2_url]" placeholder="https://example.com/your-form"   value="{{ $settings['form_2_url'] ?? '' }}" required>
+                                    <div class="invalid-feedback">
+                                        Please enter a valid form URL.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </form>
+
+                    <hr>
+
+                    <!-- Script Instruction -->
+                    <h6 class="mt-3">Required Script</h6>
+                    <p class="text-muted" style="font-size: 13px;">
+                        Please copy and paste the following script inside your CRM Form page:
+                    </p>
+
+                    <pre style="background: #f8f8f8; padding: 10px; border-radius: 5px; font-size: 12px;">
+&lt;script&gt;
+    function waitElement(selector) {
+        return new Promise(function (resolve) {
+            let elm = document.querySelector(selector);
+            if (elm) {
+                resolve(elm);
+                return;
+            }
+            new MutationObserver(function () {
+                elm = document.querySelector(selector);
+                if (elm) {
+                    this.disconnect();
+                    resolve(elm);
+                }
+            }).observe(document, { subtree: true, childList: true });
+        });
+    }
+    waitElement(".thank-you-message").then(() => {
+        const storedData = localStorage.getItem("_ud");
+        let parsedData = null;
+
+        try {
+            parsedData = storedData ? JSON.parse(storedData) : null;
+        } catch (e) {
+            parsedData = storedData;
+        }
+
+        const payload = {
+            event: "form_completed",
+            data: parsedData
+        };
+
+        window.parent.postMessage(payload, "*");
+    });
+&lt;/script&gt;
+            </pre>
+
+                </div>
+            </div>
+        </div>
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-body">
@@ -284,36 +481,37 @@
 
     <script>
         $(document).ready(function() {
-            $('#onboarding-form,#template-selection-form,#webhook-setting-form,#disposition-setting-form').on(
-                'submit',
-                function(e) {
-                    e.preventDefault();
-                    var $form = $(this);
-                    var data = $(this).serialize();
+            $('#onboarding-form,#template-selection-form,#webhook-setting-form,#disposition-setting-form,#checkin-setting-form,#step-1-selection-form,#step-2-selection-form')
+                .on(
+                    'submit',
+                    function(e) {
+                        e.preventDefault();
+                        var $form = $(this);
+                        var data = $(this).serialize();
 
-                    var url = '{{ route('admin.setting.save') }}';
-                    $.ajax({
-                        type: 'POST',
-                        url: url,
-                        data: data,
-                        success: function(response) {
-                            try {
-                                $form.removeClass('was-validated');
-                                toastr.success('Saved');
-                                if ($form.is('#header-color')) {
-                                    var color = $('#color-input').val();
-                                    $('#page-topbar').css('background-color', color)
+                        var url = '{{ route('admin.setting.save') }}';
+                        $.ajax({
+                            type: 'POST',
+                            url: url,
+                            data: data,
+                            success: function(response) {
+                                try {
+                                    $form.removeClass('was-validated');
+                                    toastr.success('Saved');
+                                    if ($form.is('#header-color')) {
+                                        var color = $('#color-input').val();
+                                        $('#page-topbar').css('background-color', color)
+                                    }
+                                } catch (error) {
+                                    toastr.error(error);
                                 }
-                            } catch (error) {
-                                toastr.error(error);
+                                console.log('Data saved successfully:', response);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error saving data:', error);
                             }
-                            console.log('Data saved successfully:', response);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error saving data:', error);
-                        }
+                        });
                     });
-                });
             $('#update-admin-profile').on('submit', function(e) {
                 e.preventDefault();
                 const $form = $(this);
