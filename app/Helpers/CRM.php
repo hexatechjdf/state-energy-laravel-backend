@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\CrmToken;
 use stdClass;
 use \App\Models\Product;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
@@ -24,7 +25,7 @@ class CRM
 
     public static function getDefault($key, $def = '')
     {
-        $def = supersetting($key, $def);
+        $def = Setting::where('key', $key)->value('value') ?? $def;
         return $def;
     }
 
@@ -516,8 +517,8 @@ class CRM
         }
         $url = static::$base_url . 'oauth/token';
         $data = [];
-        $data['client_id'] = static::getDefault('crm_client_id');
-        $data['client_secret'] = static::getDefault('crm_client_secret');
+        $data['client_id'] = env('CRM_CLIENT_ID', static::getDefault('crm_client_id'));
+        $data['client_secret'] = env('CRM_CLIENT_SECRET', static::getDefault('crm_client_secret'));
         $data[$md] = $code;
         $data['grant_type'] = empty($method) ? 'authorization_code' : 'refresh_token';
         $headers = ['content-type: application/x-www-form-urlencoded'];

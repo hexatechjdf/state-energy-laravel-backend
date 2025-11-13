@@ -27,7 +27,7 @@ class CrmToken extends Model
     {
         $is_refresh = false;
         try {
-            list($is_refresh, $token) = CRM::getRefreshToken($this->location_id, $this, true);
+            list($is_refresh, $token) = CRM::getRefreshToken($this->location_id, $this, false);
         } catch (\Exception $e) {
             return 500;
         }
