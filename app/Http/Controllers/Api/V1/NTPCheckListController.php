@@ -19,9 +19,13 @@ class NTPCheckListController extends Controller
         $superAdmin = User::where('role_id', User::ROLE_ADMIN)->first();
         $location_id = getSettingValue($superAdmin->id, 'location_id', '');
 
-        $appointmentId = $request->appointment_id;
-        $orderId = $request->order_id;
-
+        $appointmentId = trim($request->input('appointment_id'));
+        $orderId       = trim($request->input('order_id'));
+        Log::info('DEBUG IDs', [
+            'appointment_raw' => $request->get('appointment_id'),
+            'order_raw'       => $request->get('order_id'),
+            'all'             => $request->all()
+        ]);
         if (empty($appointmentId) || empty($orderId)) {
             return response()->json([
                 'status'  => false,
