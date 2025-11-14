@@ -24,7 +24,10 @@ class OrderController extends Controller
         $totalAmount = $cartItems->sum('price');
         $loanFinanced = $request->loan_financed_amount ?? 0;
         $orderAmount = $totalAmount - $loanFinanced;
-        $order = Order::create([
+        $order = Order::updateOrCreate([
+            'user_id'        => $user->id,
+            'appointment_id' => $request->appointment_id,
+        ], [
             'user_id'                 => $user->id,
             'first_name'              => $request->first_name,
             'last_name'               => $request->last_name,
@@ -46,7 +49,10 @@ class OrderController extends Controller
         ]);
 
         foreach ($cartItems as $item) {
-            OrderItem::create([
+            OrderItem::updateOrCreate([
+                'order_id'    => $order->id,
+                'category_id' => $item->category_id,
+            ], [
                 'order_id'      => $order->id,
                 'category_id'   => $item->category_id,
                 'configuration' => json_encode($item->configuration),
@@ -56,7 +62,7 @@ class OrderController extends Controller
             ]);
         }
 
-        Cart::where('user_id', $user->id)->where('appointment_id', request('appointment_id', null))->delete();
+        //Cart::where('user_id', $user->id)->where('appointment_id', request('appointment_id', null))->delete();
         dispatch(new SendOrderToWebhook($order));
         dispatch(new UpdateContactInCRM($order));
         return successResponse([

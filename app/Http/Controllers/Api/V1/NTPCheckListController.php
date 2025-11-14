@@ -22,7 +22,7 @@ class NTPCheckListController extends Controller
         $appointmentId = $request->appointment_id;
         $orderId = $request->order_id;
 
-        if (!$appointmentId || !$orderId) {
+        if (empty($appointmentId) || empty($orderId)) {
             return response()->json([
                 'status'  => false,
                 'message' => 'Appointment ID and Order ID are required.',
