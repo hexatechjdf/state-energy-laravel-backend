@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\UserStoreRequest;
 use App\Http\Resources\UserResource;
 use App\Jobs\SendGhlWelcomeEmail;
 use App\Models\CrmToken;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -164,33 +165,28 @@ class AdminController extends Controller
         }
 
         try {
-            // 2. Exchange the authorization code for an access token
             $tokenResponse = $this->exchangeCodeForToken($authorizationCode);
-
-            // 3. Securely store the token
-            $this->storeCrmToken($tokenResponse);
-
-            // 4. Return the appropriate response
-            if ($request->has('onlyjson')) {
-                // This is the response for the JavaScript fetch() call
-                return response('Connected successfully', 200)
-                    ->header('Content-Type', 'text/plain');
-            }
-
-            // If the user is redirected here directly, show a success view
-            return view('install_completed');
         } catch (\Exception $e) {
             // Log the detailed error for debugging
             \Log::error('CRM OAuth Callback Failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
 
-            // Return a generic error to the user/API call
-            if ($request->has('onlyjson')) {
-                return response()->json(['error' => 'An internal error occurred during authentication.'], 500);
-            }
+
             return $this->handleError('An internal error occurred. Please try again later.');
         }
+        try {
+            $this->storeCrmToken($tokenResponse);
+        } catch (\Exception $e) {
+            // Log the detailed error for debugging
+            \Log::error('CRM OAuth Callback Failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+
+            return $this->handleError('An internal error occurred. Please try again later.');
+        }
+        return redirect()->route('admin.setting')->with('success', 'Connected successfully');
     }
 
     /**
@@ -202,25 +198,23 @@ class AdminController extends Controller
      */
     private function exchangeCodeForToken(string $code): object
     {
-        $response = Http::asForm()->post('https://services.leadconnectorhq.com/oauth/token', [
+        $payload = [
             'client_id'     => env('CRM_CLIENT_ID'),
             'client_secret' => env('CRM_CLIENT_SECRET'),
             'grant_type'    => 'authorization_code',
             'code'          => $code,
-            'redirect_uri'  => env('CRM_OAUTH_CALLBACK_URL_LOCATION'), // Ensure this matches your provider settings
-        ]);
-
+            'user_type'     => 'Location',
+            // 'redirect_uri'  => env('CRM_OAUTH_CALLBACK_URL_LOCATION'),
+        ];
+        $response = Http::asForm()->post('https://services.leadconnectorhq.com/oauth/token', $payload);
         if ($response->failed()) {
-            // Throw an exception if the token exchange fails
             throw new \Exception('Failed to obtain access token from provider. Status: ' . $response->status());
         }
 
         $tokenData = $response->object();
-
         if (isset($tokenData->error)) {
             throw new \Exception('Token provider returned an error: ' . ($tokenData->error_description ?? 'Unknown error'));
         }
-
         return $tokenData;
     }
 
@@ -244,6 +238,9 @@ class AdminController extends Controller
                 'company_id'    => $tokenData->companyId ?? null,
             ]
         );
+        Setting::where('key', 'location_id')
+            ->where('user_id', auth()->id())
+            ->update(['value' => $tokenData->locationId]);
     }
 
     /**
@@ -254,6 +251,6 @@ class AdminController extends Controller
      */
     private function handleError(string $message)
     {
-        return view('crm_error', ['message' => $message]);
+        return redirect()->route('admin.setting')->with('error', $message);
     }
 }

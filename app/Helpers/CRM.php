@@ -136,8 +136,8 @@ class CRM
 
     public static function baseConnect()
     {
-        $callbackurl = '/';
-        $client_id = static::getDefault('crm_client_id');
+        $callbackurl = env('CRM_OAUTH_CALLBACK_URL', route('crm.oauth_callback','crm'));
+        $client_id = env('CRM_CLIENT_ID', static::getDefault('crm_client_id'));
         return "response_type=code&redirect_uri=" . urlencode($callbackurl) . "&client_id=" . $client_id . "&scope=" . urlencode(static::$scopes);
     }
     public static function ConnectOauth($main_id, $token, $is_company = false, $user_id = null)

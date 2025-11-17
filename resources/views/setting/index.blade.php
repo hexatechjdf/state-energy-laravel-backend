@@ -186,7 +186,8 @@
                                 <div class="mb-3">
                                     <label for="form_1_url" class="form-label">Form 1 URL</label>
                                     <input type="url" class="form-control" id="form_1_url"
-                                        name="setting[form_1_url]" placeholder="https://example.com/your-form"   value="{{ $settings['form_1_url'] ?? '' }}"required>
+                                        name="setting[form_1_url]" placeholder="https://example.com/your-form"
+                                        value="{{ $settings['form_1_url'] ?? '' }}"required>
                                     <div class="invalid-feedback">
                                         Please enter a valid form URL.
                                     </div>
@@ -250,7 +251,7 @@
             <div class="card">
                 <div class="card-body">
 
-                    <h4 class="card-title">Qualification Page  – CRM Form URL</h4>
+                    <h4 class="card-title">Qualification Page – CRM Form URL</h4>
 
                     <p class="text-muted" style="font-size: 14px;">
                         Please provide the URL of your Form 2.
@@ -267,9 +268,10 @@
 
                                 <!-- Form URL -->
                                 <div class="mb-3">
-                                    <label for="form_2_url" class="form-label">Qualification Page  CRM Form URL</label>
+                                    <label for="form_2_url" class="form-label">Qualification Page CRM Form URL</label>
                                     <input type="url" class="form-control" id="form_2_url"
-                                        name="setting[form_2_url]" placeholder="https://example.com/your-form"   value="{{ $settings['form_2_url'] ?? '' }}" required>
+                                        name="setting[form_2_url]" placeholder="https://example.com/your-form"
+                                        value="{{ $settings['form_2_url'] ?? '' }}" required>
                                     <div class="invalid-feedback">
                                         Please enter a valid form URL.
                                     </div>
@@ -345,7 +347,7 @@
                         token, copy it, and paste it
                         here along with the <code class="fw-bold fs-5"> Location ID </code>used to
                         generate it.</p> --}}
-                    <form class="needs-validation" novalidate id="onboarding-form">
+                    {{-- <form class="needs-validation" novalidate id="onboarding-form">
                         @csrf
                         <div class="row">
                             <div class="col-md-12">
@@ -383,7 +385,7 @@
                         <div>
                             <button class="btn btn-primary" type="submit">Save</button>
                         </div>
-                    </form>
+                    </form> --}}
                     <div class="row mt-3">
                         <div class="col-lg-12">
 
@@ -399,18 +401,15 @@
                                 </div>
 
                                 {{-- This button will link to a route to handle the disconnection. --}}
-                                <a href="{{ route('oauth.disconnect', ['provider' => 'crm', 'locationId' => $crmToken->location_id]) }}"
-                                    class="btn btn-danger"
-                                    onclick="return confirm('Are you sure you want to disconnect? This will stop all data synchronization.')">
-                                    Disconnect CRM
+                                <a class="btn btn-primary" id="connect-location-btn" href="{{ $connectUrl }}">
+                                    Reconnect to CRM Location
                                 </a>
                             @else
                                 {{-- STATE: Not Connected --}}
                                 {{-- This button links to the OAuth connection flow we built earlier. --}}
-                                <button type="button" class="btn btn-primary" id="connect-location-btn"
-                                    data-base-url="{{ route('oauthcrmconnection') }}/location/">
+                                <a class="btn btn-primary" id="connect-location-btn" href="{{ $connectUrl }}">
                                     Connect to CRM Location
-                                </button>
+                                </a>
                                 <p class="text-muted mt-2">Connect your CRM account to enable data synchronization.</p>
                             @endif
 
@@ -595,10 +594,10 @@
 
                 if (locationId !== '') {
                     $connectBtn.show();
-                    $connectBtn.attr('data-href', baseUrl + locationId);
+                    //$connectBtn.attr('data-href', baseUrl + locationId);
                 } else {
                     $connectBtn.hide();
-                    $connectBtn.attr('data-href', '');
+                    $c //onnectBtn.attr('data-href', '');
                 }
             }
 
@@ -609,12 +608,12 @@
             $locationInput.on('input', toggleConnectButton);
 
             // Redirect when clicking the button
-            $connectBtn.on('click', function() {
-                const href = $(this).attr('data-href');
-                if (href) {
-                    window.location.href = href;
-                }
-            });
+            // $connectBtn.on('click', function() {
+            //     const href = $(this).attr('data-href');
+            //     if (href) {
+            //         window.location.href = href;
+            //     }
+            // });
         });
     </script>
 @endsection

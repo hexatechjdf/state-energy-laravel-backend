@@ -50,7 +50,7 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth']], 
         Route::delete('/delete/{id}', [LenderController::class, 'destroy'])->name('delete');
     });
 });
-Route::get('o-auth/{type?}/{id?}', [AdminController::class, 'connectCrmByType'])->name('oauthcrmconnection');
+// Route::get('o-auth/{type?}/{id?}', [AdminController::class, 'connectCrmByType'])->name('oauthcrmconnection');
 Route::prefix('authorization')->name('crm.')->group(function () {
     Route::get('/{type}/oauth/callback', [AdminController::class, 'oAuthCallback'])->name('oauth_callback');
 });

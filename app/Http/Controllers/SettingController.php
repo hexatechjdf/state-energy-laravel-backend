@@ -29,8 +29,8 @@ class SettingController extends Controller
         if ($userLocationId) {
             $crmToken = CrmToken::where('location_id', $userLocationId)->first();
         }
-
-        return view('setting.index', compact('settings', 'user', 'crmToken'));
+        $connectUrl = CRM::directConnect();
+        return view('setting.index', compact('settings', 'user', 'crmToken', 'connectUrl'));
     }
 
     /**
