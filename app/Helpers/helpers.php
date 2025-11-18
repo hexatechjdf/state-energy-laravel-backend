@@ -2,6 +2,7 @@
 
 use App\Helpers\gCache;
 use App\Models\Setting;
+use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 
 function getSettingValue($user_id, $key, $def = '')
@@ -94,5 +95,10 @@ if (!function_exists('ghl_oauth_call')) {
 
         curl_close($curl);
         return $response;
+    }
+
+    function getAdminUser()
+    {
+        return \App\Models\User::where('role_id', User::ROLE_ADMIN)->first();
     }
 }

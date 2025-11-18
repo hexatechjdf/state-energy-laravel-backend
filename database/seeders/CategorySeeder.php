@@ -259,13 +259,13 @@ class CategorySeeder extends Seeder
                 'tankless_addon'    => '500.00',
                 '18 kW' => [
                     'msrp'       => '3150.00',
-                    'min'       => '3150.00',
-                    'max' => '3150.00'
+                    'min_price'       => '3150.00',
+                    'max_price' => '3150.00'
                 ],
                 '24 kW' => [
                     'msrp'       => '5490.00',
-                    'min'       => '3150.00',
-                    'max' => '3150.00'
+                    'min_price'       => '3150.00',
+                    'max_price' => '3150.00'
                 ],
             ]),
             'configuration'  => json_encode([

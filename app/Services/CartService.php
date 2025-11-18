@@ -174,4 +174,15 @@ class CartService
         }
         return $basePrice;
     }
+    function hasUserAlreadyCheckIn($userId, $appointmentId = null)
+    {
+        $query = \App\Models\Order::where('user_id', $userId);
+           // ->whereNotNull('checkin_completed_at');
+
+        if ($appointmentId) {
+            $query->where('appointment_id', $appointmentId);
+        }
+
+        return $query->exists();
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Setting;
 use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,6 +25,8 @@ class AuthController extends Controller
         return successResponse([
             'token' => $token,
             'user'  => new UserResource($user),
+            'checkin_form_url' => Setting::where('key', 'form_1_url')->where('user_id', getAdminUser()->id ?? null)->value('value'),
+            'qualification_form_url' => Setting::where('key', 'form_2_url')->where('user_id', getAdminUser()->id ?? null)->value('value'),
         ]);
     }
 }

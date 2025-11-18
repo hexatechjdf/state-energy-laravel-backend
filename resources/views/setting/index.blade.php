@@ -167,10 +167,10 @@
             <div class="card">
                 <div class="card-body">
 
-                    <h4 class="card-title">Step 1 – Form URL</h4>
+                    <h4 class="card-title">CheckIn – Form URL</h4>
 
                     <p class="text-muted" style="font-size: 14px;">
-                        Please provide the URL of your Form 1.
+                        Please provide the URL of your CheckIn.
                         After submitting the URL, make sure to <strong>add the script below</strong> inside that form so we
                         can track completions.
                     </p>
@@ -184,7 +184,7 @@
 
                                 <!-- Form URL -->
                                 <div class="mb-3">
-                                    <label for="form_1_url" class="form-label">Form 1 URL</label>
+                                    <label for="form_1_url" class="form-label">CheckIn URL</label>
                                     <input type="url" class="form-control" id="form_1_url"
                                         name="setting[form_1_url]" placeholder="https://example.com/your-form"
                                         value="{{ $settings['form_1_url'] ?? '' }}"required>
@@ -205,45 +205,7 @@
                     <p class="text-muted" style="font-size: 13px;">
                         Please copy and paste the following script inside your Form 1 page:
                     </p>
-
-                    <pre style="background: #f8f8f8; padding: 10px; border-radius: 5px; font-size: 12px;">
-&lt;script&gt;
-    function waitElement(selector) {
-        return new Promise(function (resolve) {
-            let elm = document.querySelector(selector);
-            if (elm) {
-                resolve(elm);
-                return;
-            }
-            new MutationObserver(function () {
-                elm = document.querySelector(selector);
-                if (elm) {
-                    this.disconnect();
-                    resolve(elm);
-                }
-            }).observe(document, { subtree: true, childList: true });
-        });
-    }
-    waitElement(".thank-you-message").then(() => {
-        const storedData = localStorage.getItem("_ud");
-        let parsedData = null;
-
-        try {
-            parsedData = storedData ? JSON.parse(storedData) : null;
-        } catch (e) {
-            parsedData = storedData;
-        }
-
-        const payload = {
-            event: "form_completed",
-            data: parsedData
-        };
-
-        window.parent.postMessage(payload, "*");
-    });
-&lt;/script&gt;
-            </pre>
-
+                    <pre style="background: #f8f8f8; padding: 10px; border-radius: 5px; font-size: 12px;">&lt;script src="{{ asset('assets/js/thankyou-listener.js') }}"&gt;&lt;/script&gt;</pre>
                 </div>
             </div>
         </div>
@@ -289,44 +251,7 @@
                     <p class="text-muted" style="font-size: 13px;">
                         Please copy and paste the following script inside your CRM Form page:
                     </p>
-
-                    <pre style="background: #f8f8f8; padding: 10px; border-radius: 5px; font-size: 12px;">
-&lt;script&gt;
-    function waitElement(selector) {
-        return new Promise(function (resolve) {
-            let elm = document.querySelector(selector);
-            if (elm) {
-                resolve(elm);
-                return;
-            }
-            new MutationObserver(function () {
-                elm = document.querySelector(selector);
-                if (elm) {
-                    this.disconnect();
-                    resolve(elm);
-                }
-            }).observe(document, { subtree: true, childList: true });
-        });
-    }
-    waitElement(".thank-you-message").then(() => {
-        const storedData = localStorage.getItem("_ud");
-        let parsedData = null;
-
-        try {
-            parsedData = storedData ? JSON.parse(storedData) : null;
-        } catch (e) {
-            parsedData = storedData;
-        }
-
-        const payload = {
-            event: "form_completed",
-            data: parsedData
-        };
-
-        window.parent.postMessage(payload, "*");
-    });
-&lt;/script&gt;
-            </pre>
+                    <pre style="background: #f8f8f8; padding: 10px; border-radius: 5px; font-size: 12px;">&lt;script src="{{ asset('assets/js/thankyou-listener.js') }}"&gt;&lt;/script&gt;</pre>
 
                 </div>
             </div>

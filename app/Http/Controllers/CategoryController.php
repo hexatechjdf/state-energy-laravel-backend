@@ -205,6 +205,13 @@ class CategoryController extends Controller
                                         'max_price' => $maxFieldPricing[$option] ?? null
                                     ];
                                 }
+                                  if ($category->name == 'Water Heater') {
+                                    $newPricing[$option] = [
+                                        'msrp' => $fieldPricing[$option] ?? null,
+                                        'min_price' => $minFieldPricing[$option] ?? null,
+                                        'max_price' => $maxFieldPricing[$option] ?? null
+                                    ];
+                                }
                             }
                         }
                         $field['options'] = $fieldOptions;

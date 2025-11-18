@@ -60,6 +60,7 @@ class CartController extends Controller
             ->get();
         return successResponse([
             'cart'  => CartResource::collection($cartItems),
+            'already_checkIn'=> $this->cartService->hasUserAlreadyCheckIn(auth()->id(), request('appointment_id', null)),
         ]);
     }
 
