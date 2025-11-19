@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\SendDispositionRequest;
+use App\Models\CheckIn;
 
 class UserController extends Controller
 {
@@ -194,7 +195,19 @@ class UserController extends Controller
         if (!$superAdmin) {
             return errorResponse('Super Admin not found.', 404);
         }
-
+        $checkIn = CheckIn::where('appointment_id', $request->appointment_id)
+            ->where('user_id', $user->id)
+            ->first();
+        if (!$checkIn) {
+            $checkIn = CheckIn::create([
+                'appointment_id' => $request->appointment_id,
+                'user_id' => $user->id,
+                'data' => $request->all(),
+            ]);
+        } else {
+            $checkIn->data = $request->all();
+            $checkIn->save();
+        }
         $checkin_webhook_url = getSettingValue($superAdmin->id, 'checkin_webhook_url', '');
 
         if (empty($checkin_webhook_url)) {

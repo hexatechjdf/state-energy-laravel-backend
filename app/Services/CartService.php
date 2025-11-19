@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Category;
+use App\Models\CheckIn;
 
 class CartService
 {
@@ -176,13 +177,10 @@ class CartService
     }
     function hasUserAlreadyCheckIn($userId, $appointmentId = null)
     {
-        $query = \App\Models\Order::where('user_id', $userId);
-           // ->whereNotNull('checkin_completed_at');
-
+        $query = CheckIn::where('user_id', $userId);
         if ($appointmentId) {
             $query->where('appointment_id', $appointmentId);
         }
-
         return $query->exists();
     }
 }
