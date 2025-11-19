@@ -47,7 +47,10 @@ class OrderController extends Controller
             'appointment_id'          => $request->appointment_id ?? null,
             'contact_id'              => $request->contact_id ?? null,
         ]);
-
+        $newCategoryIds = $cartItems->pluck('category_id')->toArray();
+        OrderItem::where('order_id', $order->id)
+            ->whereNotIn('category_id', $newCategoryIds)
+            ->delete();
         foreach ($cartItems as $item) {
             OrderItem::updateOrCreate([
                 'order_id'    => $order->id,
