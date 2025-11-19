@@ -202,10 +202,10 @@ class UserController extends Controller
             $checkIn = CheckIn::create([
                 'appointment_id' => $request->appointment_id,
                 'user_id' => $user->id,
-                'data' => $request->all(),
+                'data' => json_encode($request->all()),
             ]);
         } else {
-            $checkIn->data = $request->all();
+            $checkIn->data = json_encode($request->all());
             $checkIn->save();
         }
         $checkin_webhook_url = getSettingValue($superAdmin->id, 'checkin_webhook_url', '');
