@@ -32,7 +32,7 @@ class ReportController extends Controller
                 'electric' => 0.00,   // 0%
                 'water' => 0.00,
                 'insurance' => 0.00,
-                'grid_fee' => 0,     // special rule
+                'grid_fee' => 25,     // special rule
             ],
             'Solar' => [
                 'electric' => 1.00,   // 100%
