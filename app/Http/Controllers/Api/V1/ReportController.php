@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 
 class ReportController extends Controller
 {
@@ -26,12 +27,69 @@ class ReportController extends Controller
         $electricInflationRate = 0.05; // 5%
         $waterInflationRate = 0.04;    // 4%
         $insuranceInflationRate = 0.06; // 6%
+        $savingsMap = [
+            'Solar' => [
+                'electric' => 1.00,   // 100%
+                'water' => 0.00,
+                'insurance' => 0.00,
+                'grid_fee' => 25,     // special rule
+            ],
+            'HVAC' => [
+                'electric' => 0.20,
+                'water' => 0.00,
+                'insurance' => 0.00,
+                'grid_fee' => 0,
+            ],
+            'Insulation' => [
+                'electric' => 0.10,
+                'water' => 0.00,
+                'insurance' => 0.00,
+                'grid_fee' => 0,
+            ],
+            'Windows' => [
+                'electric' => 0.10,
+                'water' => 0.00,
+                'insurance' => 0.15,
+                'grid_fee' => 0,
+            ],
+            'Windows' => [
+                'electric' => 0.10,
+                'water' => 0.00,
+                'insurance' => 0.15,
+                'grid_fee' => 0,
+            ],
+            'Doors' => [
+                'electric' => 0.00,
+                'water' => 0.00,
+                'insurance' => 0.15,
+                'grid_fee' => 0,
+            ],
+            'Water Heater' => [
+                'electric' => 0.00,
+                'water' => 0.40,
+                'insurance' => 0.00,
+                'grid_fee' => 0,
+            ],
+            'Insulation' => [
+                'electric' => 0.00,
+                'water' => 0.10,
+                'insurance' => 0.00,
+                'grid_fee' => 0,
+            ],
+            'Other' => [
+                'electric' => 0.00,
+                'water' => 0.10,
+                'insurance' => 0.00,
+                'grid_fee' => 0,
+            ],
 
-        $electricitySavingPercentage = 1.0; // 100%
-        $waterSavingPercentage = 0.0;       // 0%
-        $insuranceSavingPercentage = 0.0;   // 0%
-
-        $fixedMonthlyFee = 25; // e.g., for solar panel maintenance
+        ];
+        $category_id = $request->input('category_id');
+        $category = Category::find($category_id)->name ?? 'Other';
+        $electricitySavingPercentage = $savingsMap[$category]['electric'];
+        $waterSavingPercentage = $savingsMap[$category]['water'];
+        $insuranceSavingPercentage = $savingsMap[$category]['insurance'];
+        $fixedMonthlyFee = $savingsMap[$category]['grid_fee']; // e.g., $25 for Solar
 
         // --- Calculations ---
         $years = [0, 5, 10, 15, 25];
@@ -58,19 +116,20 @@ class ReportController extends Controller
             ];
 
             // 2. Adjusted Cost Table Calculations
-            $adjustedElectric = ($projectedElectric * (1 - $electricitySavingPercentage)) + $fixedMonthlyFee;
-            $adjustedWater = $projectedWater * (1 - $waterSavingPercentage);
-            $adjustedInsurance = $projectedInsurance * (1 - $insuranceSavingPercentage);
+
+            $adjustedElectric = ($monthlyElectricityBill * (1 - $electricitySavingPercentage) * pow((1 + $electricInflationRate), $year)) + $fixedMonthlyFee;
+            $adjustedWater = ($monthlyWaterBill * (1 - $waterSavingPercentage) * pow((1 + $waterInflationRate), $year));
+            $adjustedInsurance = ($monthlyInsuranceBill * (1 - $insuranceSavingPercentage) * pow((1 + $insuranceInflationRate), $year));
 
             $adjustedCostRows[] = [
                 'year' => $year,
                 'adjusted_electricity' => round($adjustedElectric, 2),
                 'adjusted_water' => round($adjustedWater, 2),
                 'adjusted_insurance' => round($adjustedInsurance, 2),
-                'total_adjusted_monthly' => round($adjustedElectric + $adjustedWater + $adjustedInsurance, 2),
+                'total_adjusted_monthly' => round($adjustedElectric + $adjustedWater + $adjustedInsurance + 120, 2),
             ];
         }
-        
+
         // 3. Overall 25-Year Summary Calculation
         $totalCostWithoutSavings = 0;
         $totalAdjustedCostWithSavings = 0;
@@ -86,8 +145,8 @@ class ReportController extends Controller
             $adjustedElectricMonthly = ($projectedElectricMonthly * (1 - $electricitySavingPercentage)) + $fixedMonthlyFee;
             $adjustedWaterMonthly = $projectedWaterMonthly * (1 - $waterSavingPercentage);
             $adjustedInsuranceMonthly = $projectedInsuranceMonthly * (1 - $insuranceSavingPercentage);
-            
-            $totalAdjustedCostWithSavings += $adjustedElectricMonthly + $adjustedWaterMonthly + $adjustedInsuranceMonthly;
+
+            $totalAdjustedCostWithSavings += $adjustedElectricMonthly + $adjustedWaterMonthly + $adjustedInsuranceMonthly + 120;
         }
 
 

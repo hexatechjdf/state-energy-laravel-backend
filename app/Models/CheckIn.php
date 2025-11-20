@@ -11,4 +11,7 @@ class CheckIn extends Model
         'user_id',
         'data',
     ];
+    protected $casts = [
+        'data' => 'array',
+    ];
 }

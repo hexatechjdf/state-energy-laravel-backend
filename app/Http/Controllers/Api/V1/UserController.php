@@ -216,4 +216,13 @@ class UserController extends Controller
         Http::post($checkin_webhook_url, $request->all());
         return successResponse(['message' => 'Checkin sent successfully.']);
     }
+    public function getCheckIn(Request $request)
+    {
+        $user = loginUser();
+
+        $checkIn = CheckIn::where('appointment_id', $request->appointment_id)
+            ->where('user_id', $user->id)
+            ->first();
+        return successResponse(['checkin_data' => $checkIn]);
+    }
 }
