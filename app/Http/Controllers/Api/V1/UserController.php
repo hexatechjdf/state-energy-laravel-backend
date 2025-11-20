@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\SendDispositionRequest;
+use App\Http\Resources\CheckInResource;
 use App\Models\CheckIn;
 
 class UserController extends Controller
@@ -223,6 +224,7 @@ class UserController extends Controller
         $checkIn = CheckIn::where('appointment_id', $request->appointment_id)
             ->where('user_id', $user->id)
             ->first();
-        return successResponse(['checkin_data' => $checkIn]);
+        
+        return successResponse(['checkin_data' => $checkIn ? new CheckInResource($checkIn) : null]);
     }
 }
