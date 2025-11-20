@@ -10,3 +10,4 @@ Route::get('/user/get-hl-user', [UserController::class, 'getHLUsers']);
 Route::get('/user/get-crm-contact', [UserController::class, 'getCRMContact']);
 Route::post('/user/appointment/send-disposition', [UserController::class, 'sendDisposition'])->middleware('auth:sanctum');
 Route::post('/user/webhook', [UserController::class, 'sendUserInfoWebhook'])->middleware('auth:sanctum');
+Route::get('/user/checkIn', [UserController::class, 'getCheckIn'])->middleware('auth:sanctum');
