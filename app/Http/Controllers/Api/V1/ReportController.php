@@ -98,7 +98,7 @@ class ReportController extends Controller
         $fixedMonthlyFee = $savingsMap[$category]['grid_fee']; // e.g., $25 for Solar
 
         // --- Calculations ---
-        $years = [0, 5, 10, 15, 25];
+        $years = [0, 5, 10, 15, 20, 25];
         $costProjectionRows = [];
         $adjustedCostRows = [];
 
