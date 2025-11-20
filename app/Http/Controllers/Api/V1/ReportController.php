@@ -28,6 +28,12 @@ class ReportController extends Controller
         $waterInflationRate = 0.04;    // 4%
         $insuranceInflationRate = 0.06; // 6%
         $savingsMap = [
+            'Roof' => [
+                'electric' => 0.00,   // 0%
+                'water' => 0.00,
+                'insurance' => 0.00,
+                'grid_fee' => 0,     // special rule
+            ],
             'Solar' => [
                 'electric' => 1.00,   // 100%
                 'water' => 0.00,
