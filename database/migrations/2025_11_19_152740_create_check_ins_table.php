@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('appointment_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->string('status')->nullable();
             $table->json('data')->nullable();
             $table->timestamps();
         });
