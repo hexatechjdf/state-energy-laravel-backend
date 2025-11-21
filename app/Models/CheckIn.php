@@ -10,6 +10,7 @@ class CheckIn extends Model
         'appointment_id',
         'user_id',
         'data',
+        'status'
     ];
     protected $casts = [
         'data' => 'array',

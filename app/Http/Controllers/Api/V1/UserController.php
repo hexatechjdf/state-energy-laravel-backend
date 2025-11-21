@@ -262,12 +262,12 @@ class UserController extends Controller
         if (!$superAdmin) {
             return errorResponse('Super Admin not found.', 404);
         }
-        $checkIn = CheckIn::where('appointment_id', $request->appointment_id)
+        $checkIn = CheckIn::where('appointment_id', $request->appointment_id ?? $request->id ?? '')
             ->where('user_id', $user->id)
             ->first();
         if (!$checkIn) {
             $checkIn = CheckIn::create([
-                'appointment_id' => $request->appointment_id,
+                'appointment_id' => $request->appointment_id ?? $request->id ?? '',
                 'user_id' => $user->id,
                 'status'  => "checked_in_form_submitted",
                 'data' => json_encode($request->all()),
