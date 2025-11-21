@@ -270,10 +270,10 @@ class UserController extends Controller
                 'appointment_id' => $request->appointment_id ?? $request->id ?? '',
                 'user_id' => $user->id,
                 'status'  => "checked_in_form_submitted",
-                'data' => json_encode($request->all()),
+                // 'data' => json_encode($request->all()),
             ]);
         } else {
-            $checkIn->data = json_encode($request->all());
+            // $checkIn->data = json_encode($request->all());
             $checkIn->status = "checked_in_form_submitted";
             $checkIn->save();
         }
