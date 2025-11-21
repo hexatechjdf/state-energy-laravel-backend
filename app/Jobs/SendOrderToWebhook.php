@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Http\Resources\Api\V1\OrderResource;
+use App\Http\Resources\Api\V1\WebhookOrderResource;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\User;
@@ -37,7 +37,7 @@ class SendOrderToWebhook implements ShouldQueue
             Log::warning("No webhook URL configured for user ID {$this->order->user_id}");
             return;
         }
-       $payload = (new OrderResource($this->order))->toArray(request());
+       $payload = (new WebhookOrderResource($this->order))->toArray(request());
 
         // Send to webhook
         Http::post($webhookUrl, $payload);

@@ -181,6 +181,7 @@ class CartService
         if ($appointmentId) {
             $query->where('appointment_id', $appointmentId);
         }
-        return $query->exists();
+
+        return $query->where('status', 'checked_in_form_submitted')->exists();
     }
 }

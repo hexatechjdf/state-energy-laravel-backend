@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\SendDispositionRequest;
 use App\Http\Resources\CheckInResource;
 use App\Models\CheckIn;
+use App\Models\Disposition;
 
 class UserController extends Controller
 {
@@ -133,7 +134,25 @@ class UserController extends Controller
         }
 
         if ($fetchHLContact && property_exists($fetchHLContact, 'contact')) {
-            return successResponse($fetchHLContact);
+            $contact = $fetchHLContact['contact'];
+            $response = [
+                'id'      => $contact['id'],
+                'first_name' => $contact['firstName'] ?? null,
+                'last_name'  => $contact['lastName'] ?? null,
+                'name'    => trim(($contact['firstName'] ?? '') . ' ' . ($contact['lastName'] ?? '')),
+                'phone_number'   => $contact['phone'] ?? null,
+                'email'   => $contact['email'] ?? null,
+                'address'   => $contact['address1'] ?? null,
+                'city'   => $contact['city'] ?? null,
+                'state'  => $contact['state'] ?? null,
+                'zip_code'    => $contact['postalCode'] ?? null,
+                'country' => $contact['country'] ?? null,
+                'created_at' => $contact['dateAdded'] ?? null,
+                'updated_at' => $contact['dateUpdated'] ?? null,
+                'additional_homeowners' => [],
+            ];
+
+            return successResponse($response);
         }
         return errorResponse('Invalid JWT');
     }
@@ -169,15 +188,15 @@ class UserController extends Controller
         if (empty($disposition_webhook_url)) {
             return errorResponse('Disposition webhook URL not configured.', 400);
         }
-
+        $disposition = Disposition::where('id', $request->disposition)->first();
         $payload = [
             'appointment_id'  => $request->appointment_id,
             'contact_id'      => $request->contact_id,
-            'dispo'           => $request->disposition,
+            'dispo'           => $disposition ? $disposition->name : '',
             'dispo_note'      => $request->disposition_note,
         ];
 
-        if (strtolower($request->disposition) === 'sale') {
+        if (strtolower($disposition ? $disposition->name : '') === 'sale') {
             $order = Order::where('user_id', $user->id)
                 ->where('appointment_id', $request->appointment_id)
                 ->first();
@@ -188,6 +207,53 @@ class UserController extends Controller
         return successResponse(['message' => 'Disposition sent successfully.']);
     }
     public function sendUserInfoWebhook(Request $request)
+    {
+        $user = loginUser();
+        $isFirstTime = false;
+        $superAdmin = User::where('role_id', User::ROLE_ADMIN)->first();
+
+        if (!$superAdmin) {
+            return errorResponse('Super Admin not found.', 404);
+        }
+        $checkIn = CheckIn::where('appointment_id', $request->appointment_id)
+            ->where('user_id', $user->id)
+            ->first();
+        if (!$checkIn) {
+            $checkIn = CheckIn::create([
+                'appointment_id' => $request->appointment_id,
+                'user_id' => $user->id,
+                "status"  => "checked_in",
+                'data' => json_encode($request->all()),
+            ]);
+            $isFirstTime = true;
+        } else {
+            $checkIn->data = json_encode($request->all());
+            $checkIn->save();
+            $isFirstTime = false;
+        }
+        $checkin_webhook_url = getSettingValue($superAdmin->id, 'checkin_webhook_url', '');
+
+        if (empty($checkin_webhook_url)) {
+            return errorResponse('Checkin webhook URL not configured.', 400);
+        }
+        if (!$isFirstTime) {
+            Http::post($checkin_webhook_url, ["status" => "checked_in", "appointment_id" => $request->appointment_id, "check_in_data" => $request->all()]);
+        } else {
+            Http::post($checkin_webhook_url, ["status" => "checked_in", "appointment_id" => $request->appointment_id]);
+        }
+        return successResponse(['message' => 'Checkin sent successfully.']);
+    }
+    public function getCheckIn(Request $request)
+    {
+        $user = loginUser();
+
+        $checkIn = CheckIn::where('appointment_id', $request->appointment_id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        return successResponse(['checkin_data' => $checkIn ? new CheckInResource($checkIn) : null]);
+    }
+    public function checkInFormSubmitted(Request $request)
     {
         $user = loginUser();
 
@@ -203,10 +269,12 @@ class UserController extends Controller
             $checkIn = CheckIn::create([
                 'appointment_id' => $request->appointment_id,
                 'user_id' => $user->id,
+                'status'  => "checked_in_form_submitted",
                 'data' => json_encode($request->all()),
             ]);
         } else {
             $checkIn->data = json_encode($request->all());
+            $checkIn->status = "checked_in_form_submitted";
             $checkIn->save();
         }
         $checkin_webhook_url = getSettingValue($superAdmin->id, 'checkin_webhook_url', '');
@@ -214,17 +282,7 @@ class UserController extends Controller
         if (empty($checkin_webhook_url)) {
             return errorResponse('Checkin webhook URL not configured.', 400);
         }
-        Http::post($checkin_webhook_url, $request->all());
+        Http::post($checkin_webhook_url, ["status" => "checked_in_form_submitted", "appointment_id" => $request->appointment_id, "check_in_data" => $request->all()]);
         return successResponse(['message' => 'Checkin sent successfully.']);
-    }
-    public function getCheckIn(Request $request)
-    {
-        $user = loginUser();
-
-        $checkIn = CheckIn::where('appointment_id', $request->appointment_id)
-            ->where('user_id', $user->id)
-            ->first();
-        
-        return successResponse(['checkin_data' => $checkIn ? new CheckInResource($checkIn) : null]);
     }
 }
