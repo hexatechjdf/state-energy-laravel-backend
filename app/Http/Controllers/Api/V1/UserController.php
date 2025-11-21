@@ -237,7 +237,7 @@ class UserController extends Controller
             return errorResponse('Checkin webhook URL not configured.', 400);
         }
         if (!$isFirstTime) {
-            Http::post($checkin_webhook_url, ["status" => "checked_in", "appointment_id" => $request->appointment_id, "check_in_data" => $request->all()]);
+            Http::post($checkin_webhook_url, ["status" => "infoUpdated", "appointment_id" => $request->appointment_id, "check_in_data" => $request->all()]);
         } else {
             Http::post($checkin_webhook_url, ["status" => "checked_in", "appointment_id" => $request->appointment_id]);
         }
@@ -282,7 +282,7 @@ class UserController extends Controller
         if (empty($checkin_webhook_url)) {
             return errorResponse('Checkin webhook URL not configured.', 400);
         }
-        Http::post($checkin_webhook_url, ["status" => "checked_in_form_submitted", "appointment_id" => $request->appointment_id??$request->id??'', "check_in_data" => $request->all()]);
+        Http::post($checkin_webhook_url, ["status" => "infoUpdated", "appointment_id" => $request->appointment_id??$request->id??'', "check_in_data" => $request->all()]);
         return successResponse(['message' => 'Checkin sent successfully.']);
     }
 }
