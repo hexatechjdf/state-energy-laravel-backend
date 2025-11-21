@@ -134,9 +134,9 @@ class UserController extends Controller
         }
 
         if ($fetchHLContact && property_exists($fetchHLContact, 'contact')) {
-            $contact = $fetchHLContact['contact'];
+            $contact = $fetchHLContact->contact;
             $response = [
-                'id'      => $contact['id'],
+                'id'      => $contact->id,
                 'first_name' => $contact->firstName ?? null,
                 'last_name'  => $contact->lastName ?? null,
                 'name'    => trim(($contact->firstName ?? '') . ' ' . ($contact->lastName ?? '')),
