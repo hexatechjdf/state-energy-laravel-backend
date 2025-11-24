@@ -311,7 +311,7 @@ class ReportController extends Controller
             $adjW = ($projW * (1 - $waterSaving));
             $adjI = ($projI * (1 - $insuranceSaving));
 
-            $totalAdjusted += ($adjE + $adjW + $adjI + );
+            $totalAdjusted += ($adjE + $adjW + $adjI + 120);
         }
 
         // --------------- Final Response ---------------
