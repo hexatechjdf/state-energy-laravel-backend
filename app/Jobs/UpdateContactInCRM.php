@@ -91,6 +91,6 @@ class UpdateContactInCRM implements ShouldQueue
         if (is_string($upsertContact)) {
             $upsertContact = json_decode($upsertContact, true);
         }
-        return $upsertContact['contact']['id'] ?? null;
+        return $upsertContact['contact']->id ?? null;
     }
 }
