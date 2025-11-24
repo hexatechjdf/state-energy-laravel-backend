@@ -28,6 +28,8 @@ class User extends Authenticatable
         'phone',
         'dial_code',
         'city',
+        'state',
+        'address',
         'zip_code',
         'country',
         'contact_id',

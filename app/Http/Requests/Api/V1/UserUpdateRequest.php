@@ -27,6 +27,8 @@ class UserUpdateRequest extends FormRequest
             'phone'      => 'sometimes|required|string|max:255',
             'dial_code'  => 'sometimes|required|string|max:255',
             'city'       => 'sometimes|required|string|max:255',
+            'state'      => 'sometimes|required|string|max:255',
+            'address'    => 'sometimes|required|string|max:255',
             'country'    => 'sometimes|required|string|max:255',
             'zip_code'   => 'sometimes|required|string|max:255',
             'email'      => 'sometimes|required|email|unique:users,email,' . $this->user->id,
