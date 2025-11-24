@@ -290,7 +290,7 @@ class ReportController extends Controller
                 'adjusted_electricity' => round($adjE, 2),
                 'adjusted_water' => round($adjW, 2),
                 'adjusted_insurance' => round($adjI, 2),
-                'total_adjusted_monthly' => round($adjE + $adjW + $adjI + $newProgramPayment, 2), // +120 fixed cost?
+                'total_adjusted_monthly' => round($adjE + $adjW + $adjI + 120, 2), // +120 fixed cost?
             ];
         }
 
