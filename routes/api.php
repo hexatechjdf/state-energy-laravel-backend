@@ -8,7 +8,6 @@ Route::prefix('v1')
         require base_path('routes/api/v1/auth.php');
         require base_path('routes/api/v1/user.php');
         require base_path('routes/api/v1/setting.php');
-        require base_path('routes/api/v1/report.php');
         Route::middleware(['auth:sanctum'])->group(function () {
             require base_path('routes/api/v1/categories.php');
             require base_path('routes/api/v1/cart.php');
@@ -16,5 +15,6 @@ Route::prefix('v1')
             require base_path('routes/api/v1/disposition.php');
             require base_path('routes/api/v1/lender.php');
             require base_path('routes/api/v1/ntpchecklist.php');
+            require base_path('routes/api/v1/report.php');
         });
     });

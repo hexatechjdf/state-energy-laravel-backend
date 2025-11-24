@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -80,12 +81,13 @@ class ReportController extends Controller
             ],
 
         ];
+        $user = Auth::user();
         $category_id = $request->input('category_id');
         $electricitySavingPercentage = 0.0;
         $waterSavingPercentage = 0.0;
         $insuranceSavingPercentage = 0.0;
         if ($request->fromCart && $request->fromCart == true) {
-            $category_ids = Cart::where('user_id', auth()->id())->where('appointment_id', $request->appointment_id ?? $request->id ?? null)->pluck('category_id')->toArray();
+            $category_ids = Cart::where('user_id',$user->id)->where('appointment_id', $request->appointment_id ?? $request->id ?? null)->pluck('category_id')->toArray();
             foreach ($category_ids as $cat_id) {
                 $category = Category::find($cat_id)->name ?? 'Other';
                 if (isset($savingsMap[$category])) {
