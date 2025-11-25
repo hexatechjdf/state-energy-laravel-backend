@@ -143,6 +143,8 @@ class ReportController extends Controller
 
         // --------------- Final Response ---------------
         return response()->json([
+            'new_program_payment' => $newProgramPayment,
+            'program_term' => $programTerm,
             'cost_projection_table' => [
                 'title' => 'Cost Projection Over 25 Years',
                 'description' => 'Projected monthly costs with inflation applied.',
