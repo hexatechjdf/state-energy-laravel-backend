@@ -210,12 +210,12 @@ class ReportController extends Controller
 
         // Savings Map
         $savingsMap = [
-            'Roof' =>        ['electric' => 0.00, 'water' => 0.00, 'insurance' => 0.00],
+            'Roof' =>        ['electric' => 0.00, 'water' => 0.00, 'insurance' => 0.15],
             'Solar' =>       ['electric' => 1.00, 'water' => 0.00, 'insurance' => 0.00],
             'HVAC' =>        ['electric' => 0.20, 'water' => 0.00, 'insurance' => 0.00],
             'Insulation' =>  ['electric' => 0.10, 'water' => 0.00, 'insurance' => 0.00],
             'Windows' =>     ['electric' => 0.10, 'water' => 0.00, 'insurance' => 0.15],
-            'Doors' =>       ['electric' => 0.00, 'water' => 0.00, 'insurance' => 0.15],
+            'Doors' =>       ['electric' => 0.10, 'water' => 0.00, 'insurance' => 0.15],
             'Water Heater' => ['electric' => 0.00, 'water' => 0.40, 'insurance' => 0.00],
             'Other' =>       ['electric' => 0.00, 'water' => 0.10, 'insurance' => 0.00],
         ];
