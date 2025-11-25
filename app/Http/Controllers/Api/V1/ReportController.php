@@ -34,12 +34,12 @@ class ReportController extends Controller
         $hasSolar = false;
         // Savings Map
         $savingsMap = [
-            'Roof' =>        ['electric' => 0.00, 'water' => 0.00, 'insurance' => 0.15],
+            'Roof' =>        ['electric' => 0.00, 'water' => 0.00, 'insurance' => 0.30],
             'Solar' =>       ['electric' => 1.00, 'water' => 0.00, 'insurance' => 0.00],
-            'HVAC' =>        ['electric' => 0.20, 'water' => 0.00, 'insurance' => 0.00],
+            'HVAC' =>        ['electric' => 0.40, 'water' => 0.00, 'insurance' => 0.00],
             'Insulation' =>  ['electric' => 0.10, 'water' => 0.00, 'insurance' => 0.00],
-            'Windows' =>     ['electric' => 0.10, 'water' => 0.00, 'insurance' => 0.15],
-            'Doors' =>       ['electric' => 0.10, 'water' => 0.00, 'insurance' => 0.15],
+            'Windows' =>     ['electric' => 0.10, 'water' => 0.00, 'insurance' => 0.30],
+            'Doors' =>       ['electric' => 0.10, 'water' => 0.00, 'insurance' => 0.30],
             'Water Heater' => ['electric' => 0.00, 'water' => 0.40, 'insurance' => 0.00],
             'Other' =>       ['electric' => 0.00, 'water' => 0.10, 'insurance' => 0.00],
         ];
@@ -78,7 +78,7 @@ class ReportController extends Controller
             $insuranceSaving = $savingsMap[$categoryName]['insurance'];
         }
         $gridFee = $hasSolar ? 25 : 0;
-        $annualGridFee = $hasSolar ? 300 : 0; // 25 * 12
+        $annualGridFee = $hasSolar ? 7500 : 0; // 25 * 12
         // --- CAP SAVINGS AT 100% ---
         $electricSaving   = min(1, $electricSaving);
         $waterSaving      = min(1, $waterSaving);
@@ -93,7 +93,7 @@ class ReportController extends Controller
         // Inflation Rates
         $totalBaseCost = $actual25yearElectricityCost + $actual25yearWaterCost + $actual25yearInsuranceCost;
 
-        $ajd25yearElectricityCost = $actual25yearElectricityCost * (1 - $electricSaving) + (25 * 300);
+        $ajd25yearElectricityCost = $actual25yearElectricityCost * (1 - $electricSaving) + $annualGridFee;
         $ajd25yearWaterCost = $actual25yearWaterCost * (1 - $waterSaving);
         $ajd25yearInsuranceCost = $actual25yearInsuranceCost * (1 - $insuranceSaving);
         $totalAdjustedCost = $ajd25yearElectricityCost + $ajd25yearWaterCost + $ajd25yearInsuranceCost + ($newProgramPayment * $programTerm);
