@@ -87,7 +87,7 @@ class ReportController extends Controller
         $waterSavingPercentage = 0.0;
         $insuranceSavingPercentage = 0.0;
         if ($request->fromCart && $request->fromCart == true) {
-            $category_ids = Cart::where('user_id',$user->id)->where('appointment_id', $request->appointment_id ?? $request->id ?? null)->pluck('category_id')->toArray();
+            $category_ids = Cart::where('user_id', $user->id)->where('appointment_id', $request->appointment_id ?? $request->id ?? null)->pluck('category_id')->toArray();
             foreach ($category_ids as $cat_id) {
                 $category = Category::find($cat_id)->name ?? 'Other';
                 if (isset($savingsMap[$category])) {
@@ -207,7 +207,7 @@ class ReportController extends Controller
         $electricInflation = 0.05;
         $waterInflation = 0.04;
         $insuranceInflation = 0.06;
-
+        $hasSolar = false;
         // Savings Map
         $savingsMap = [
             'Roof' =>        ['electric' => 0.00, 'water' => 0.00, 'insurance' => 0.15],
@@ -219,9 +219,6 @@ class ReportController extends Controller
             'Water Heater' => ['electric' => 0.00, 'water' => 0.40, 'insurance' => 0.00],
             'Other' =>       ['electric' => 0.00, 'water' => 0.10, 'insurance' => 0.00],
         ];
-
-        // Fixed Monthly Grid Fee
-        $gridFee = 25;
 
         // --- Determine Applicable Categories ---
         $electricSaving = 0;
@@ -237,6 +234,9 @@ class ReportController extends Controller
 
             foreach ($categoryIds as $id) {
                 $categoryName = Category::find($id)->name ?? 'Other';
+                if ($categoryName === 'Solar') {
+                    $hasSolar = true;
+                }
                 if (isset($savingsMap[$categoryName])) {
                     $electricSaving += $savingsMap[$categoryName]['electric'];
                     $waterSaving += $savingsMap[$categoryName]['water'];
@@ -246,11 +246,14 @@ class ReportController extends Controller
         } else {
             // SINGLE CATEGORY
             $categoryName = Category::find($request->category_id)->name ?? 'Other';
+            if ($categoryName === 'Solar') {
+                $hasSolar = true;
+            }
             $electricSaving = $savingsMap[$categoryName]['electric'];
             $waterSaving = $savingsMap[$categoryName]['water'];
             $insuranceSaving = $savingsMap[$categoryName]['insurance'];
         }
-
+        $gridFee = $hasSolar ? 25 : 0;
         // --- CAP SAVINGS AT 100% ---
         $electricSaving   = min(1, $electricSaving);
         $waterSaving      = min(1, $waterSaving);
