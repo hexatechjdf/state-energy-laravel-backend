@@ -162,6 +162,8 @@ class ReportController extends Controller
                 'total_cost_without_savings' => round($totalBaseCost, 2),
                 'total_adjusted_cost_with_savings' => round($totalAdjustedCost, 2),
                 'total_savings_over_25_years' => round($totalBaseCost - $totalAdjustedCost, 2),
+                'annual_savings' => round($totalBaseCost - $totalAdjustedCost, 2)/25,
+                'dail_loss_if_no_action' => round($totalBaseCost - $totalAdjustedCost, 2)/(25*365)
             ]
         ]);
     }
