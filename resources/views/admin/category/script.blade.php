@@ -42,7 +42,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text">Min</span>
             </div>
-            <input type="number" class="form-control" name="adders_min_qty[]" value="${minQty}" min="1">
+            <input type="number" class="form-control" name="adders_min_qty[]" value="${minQty}" min="1" step="0.01">
           </div>
         </div>
         <div class="col-md-2">
@@ -50,7 +50,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text">Max</span>
             </div>
-            <input type="number" class="form-control" name="adders_max_qty[]" value="${maxQty}" min="1">
+            <input type="number" class="form-control" name="adders_max_qty[]" value="${maxQty}" min="1" step="0.01">
           </div>
         </div>
         <div class="col-md-1">

@@ -47,7 +47,7 @@
                                         <span class="input-group-text">MSRP</span>
                                     </div>
                                     <input type="number" class="form-control" name="cat_base_price" id="cat-base-price"
-                                        min="1">
+                                        min="1" step="0.01">
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -56,7 +56,7 @@
                                         <span class="input-group-text">Min</span>
                                     </div>
                                     <input type="number" class="form-control" name="cat_min_price" id="cat-min-price"
-                                        min="1">
+                                        min="1" step="0.01">
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -65,7 +65,7 @@
                                         <span class="input-group-text">Max</span>
                                     </div>
                                     <input type="number" class="form-control" name="cat_max_price" id="cat-max-price"
-                                        min="1">
+                                        min="1" step="0.01">
                                 </div>
                             </div>
                         </div>
